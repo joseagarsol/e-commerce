@@ -43,7 +43,7 @@ const cartCount = ref(3)
     :menu="{ side: 'right' }"
   >
     <template #title>
-      Urban Luxury
+      <span class="text-lg font-light tracking-widest uppercase">Urban Luxury</span>
     </template>
 
     <UNavigationMenu
@@ -73,7 +73,7 @@ const cartCount = ref(3)
 
     <template #content="{ close }">
       <div class="flex items-center justify-between p-4 border-b border-white/10">
-        <span class="font-bold tracking-wide">Urban Luxury</span>
+        <span class="text-lg font-light tracking-widest uppercase">Urban Luxury</span>
         <UButton
           color="neutral"
           variant="ghost"
