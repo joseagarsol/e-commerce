@@ -1,6 +1,13 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
   <UApp>
-    Hola
-    <NuxtPage />
+    <UMain>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UMain>
   </UApp>
 </template>
