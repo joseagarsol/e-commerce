@@ -38,12 +38,12 @@ const cartCount = ref(3)
 <template>
   <UHeader
     mode="slideover"
-    class="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/10"
+    class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-white/10"
     :toggle="{ color: 'primary', variant: 'ghost' }"
     :menu="{ side: 'right' }"
   >
     <template #title>
-      <span class="text-lg font-light tracking-widest uppercase">Urban Luxury</span>
+      <span class="text-lg font-light tracking-widest uppercase text-zinc-900 dark:text-white">Urban Luxury</span>
     </template>
 
     <UNavigationMenu
