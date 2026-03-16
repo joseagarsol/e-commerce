@@ -12,8 +12,8 @@ const items = ref<NavigationMenuItem[][]> ([
       to: '/collections'
     },
     {
-      label: 'Archivo',
-      to: '/archive'
+      label: 'Productos',
+      to: '/products'
     },
     {
       label: 'Sobre Nosotros',
