@@ -41,7 +41,7 @@ defineProps<{
           size="sm"
           variant="ghost"
           color="neutral"
-          class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300"
         />
         <template #content>
           <div class="p-4 w-48 text-center">
