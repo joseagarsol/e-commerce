@@ -17,6 +17,7 @@
           <div>
             <UButton
               color="primary"
+              to="/about"
               variant="outline"
               size="xl"
               class="uppercase tracking-[0.2em] text-xs px-8 py-4 transition-all hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-zinc-900 dark:border-white dark:text-white"
