@@ -1,7 +1,7 @@
 <template>
   <UContainer>
     <div class="py-12 md:py-24">
-      <section class="min-h-[60vh] flex flex-col items-center justify-center text-center px-5 mb-24">
+      <section class="flex flex-col items-center justify-center text-center px-5 mb-24">
         <h1 class="font-serif italic font-light text-5xl md:text-7xl text-zinc-900 dark:text-white leading-tight mb-6 tracking-wide">
           Redefiniendo la <br class="hidden md:block"> Elegancia Callejera
         </h1>
