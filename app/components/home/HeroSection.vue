@@ -35,15 +35,17 @@
         <UButton
           size="xl"
           label="Ver Colección"
+          to="/collections/otono-invierno-2025"
           color="primary"
           class="px-10 py-4 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 text-white"
         />
         <UButton
           size="xl"
+          to="/about"
           label="Descubrir más"
           variant="outline"
           color="neutral"
-          class="px-10 py-4 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 hover:bg-white"
+          class="px-10 py-4 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 hover:bg-white hover:text-zinc-900"
         />
       </div>
       <!-- Premium Marquee Ticker -->
