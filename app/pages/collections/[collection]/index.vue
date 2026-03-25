@@ -1,12 +1,16 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'store'
+})
+
 const route = useRoute()
-const slug = route.params.slug as string
+const slug = route.params.collection as string
 
 const parseSlug = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 </script>
 
 <template>
-  <div class="py-12 px-5 md:py-16 md:px-12">
+  <div>
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
       <div class="space-y-2">
         <h1 class="font-serif italic font-light text-4xl md:text-5xl text-zinc-900 dark:text-white leading-tight">
