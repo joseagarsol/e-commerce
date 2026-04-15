@@ -19,6 +19,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     emit('handleUserEmail', event.data.email)
     return
   }
+  navigateTo('/register')
 }
 </script>
 
