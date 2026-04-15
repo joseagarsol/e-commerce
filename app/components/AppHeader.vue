@@ -47,12 +47,17 @@ const cartCount = ref(3)
       class="hidden lg:flex tracking-wide hover:text-primary"
     />
     <template #right>
-      <UButton
-        color="primary"
-        icon="i-lucide-user"
-        variant="ghost"
-        class="transition-transform hover:scale-110 active:scale-90"
-      />
+      <UPopover :content="{ align: 'end', side: 'bottom', sideOffset: 8 }">
+        <UButton
+          color="primary"
+          icon="i-lucide-user"
+          variant="ghost"
+          class="transition-transform hover:scale-110 active:scale-90"
+        />
+        <template #content>
+          <AuthLoginRegister />
+        </template>
+      </UPopover>
       <UChip
         :show="cartCount > 0"
         :text="cartCount"
