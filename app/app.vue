@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ToasterProps } from '@nuxt/ui'
+
 useSeoMeta({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - Urban Luxury` : 'Urban Luxury | Elegancia Callejera Redefinida'
@@ -13,10 +15,12 @@ useSeoMeta({
   twitterDescription: 'Alta costura callejera y minimalismo. Descubre las últimas tendencias.',
   twitterImage: '/LandingImg_V2.jpg'
 })
+
+const toaster = { position: 'top-center' as ToasterProps['position'] }
 </script>
 
 <template>
-  <UApp>
+  <UApp :toaster="toaster">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

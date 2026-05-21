@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { useCartStore } from '@/stores/cart'
+
+const cartStore = useCartStore()
 
 const items = ref<NavigationMenuItem[][]> ([
   [
@@ -28,7 +31,7 @@ const items = ref<NavigationMenuItem[][]> ([
   ]
 ]
 )
-const cartCount = ref(3)
+const cartCount = computed(() => cartStore.products.length)
 </script>
 
 <template>
@@ -58,18 +61,36 @@ const cartCount = ref(3)
           <AuthLoginRegister />
         </template>
       </UPopover>
-      <UChip
-        :show="cartCount > 0"
-        :text="cartCount"
-        size="md"
+      <USlideover
+        v-model:open="cartStore.isOpenSlide"
+        :close="{
+          color: 'neutral',
+          icon: 'i-lucide-x',
+          variant: 'ghost'
+        }"
       >
-        <UButton
-          color="primary"
-          icon="i-lucide-shopping-cart"
-          variant="ghost"
-          class="transition-transform hover:scale-110 active:scale-90"
-        />
-      </UChip>
+        <UChip
+          :show="cartCount > 0"
+          :text="cartCount"
+          size="md"
+        >
+          <UButton
+            color="primary"
+            icon="i-lucide-shopping-cart"
+            variant="ghost"
+            class="transition-transform hover:scale-110 active:scale-90"
+          />
+        </UChip>
+        <template #header>
+          <CartHeader />
+        </template>
+        <template #body>
+          <CartBody />
+        </template>
+        <template #footer>
+          <CartFooter />
+        </template>
+      </USlideover>
     </template>
 
     <template #content="{ close }">

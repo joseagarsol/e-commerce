@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useCartStore } from '@/stores/cart'
+import type { Product, CartItem, Size } from '~/types/product'
+
+const cartStore = useCartStore()
+
 definePageMeta({
   layout: 'store'
 })
@@ -11,14 +16,24 @@ const items = [
   '/collection-essentials.png'
 ]
 
-const product = {
-  name: 'Camiseta oversize blanco mujer',
-  price: 100,
-  currency: '€',
-  description: 'Esta lujosa camiseta oversize redefine el estilo cotidiano con su silueta moderna y relajada. Confeccionada con un algodón de peso medio que ofrece una caída impecable, es la pieza esencial definitiva para un look sofisticado y minimalista.',
-  images: items,
-  stock: 20
-}
+const product = ref<Product>(
+  {
+    id: 'UIDAD2322',
+    name: 'Camiseta oversize blanco mujer',
+    price: 100,
+    description: 'Esta lujosa camiseta oversize redefine el estilo cotidiano con su silueta moderna y relajada. Confeccionada con un algodón de peso medio que ofrece una caída impecable, es la pieza esencial definitiva para un look sofisticado y minimalista.',
+    images: items,
+    stock: 13,
+    availableSizes: ['XS', 'S', 'M', 'L', 'XL'],
+    stockBySize: {
+      XS: 0,
+      S: 2,
+      M: 3,
+      L: 5,
+      XL: 3
+    }
+  }
+)
 
 const getStockBadge = (stock: number) => {
   if (stock <= 5) {
@@ -38,7 +53,7 @@ const getStockBadge = (stock: number) => {
   return null
 }
 
-const stockBadge = getStockBadge(product.stock)
+const stockBadge = getStockBadge(product.value.stock)
 
 const carousel = useTemplateRef('carousel')
 const activeIndex = ref(0)
@@ -61,8 +76,35 @@ function select(index: number) {
   carousel.value?.emblaApi?.scrollTo(index)
 }
 
-const sizes = ['XS', 'S', 'M', 'L', 'XL']
-const selectedSize = ref(sizes[0])
+const selectedSize = ref<Size | null>(product.value.availableSizes?.[0] ?? null)
+
+const handleAddToCart = () => {
+  const cartItem: CartItem = {
+    ...product.value,
+    selectedSize: selectedSize.value,
+    quantity: 1
+  }
+
+  cartStore.addProduct(cartItem)
+  cartStore.isOpenSlide = true
+}
+
+const isSoldOut = computed(() => {
+  const qtyInCart = cartStore.getItemQuantity(product.value.id, selectedSize.value)
+
+  // Producto con tallas
+  if (product.value.stockBySize) {
+    if (!selectedSize.value) return true
+    const stockAvailable = product.value.stockBySize[selectedSize.value] ?? 0
+    return stockAvailable <= qtyInCart
+  }
+  // Producto sin tallas
+  return product.value.stock <= qtyInCart
+})
+
+const isSizeSoldOut = (size: Size) => {
+  return (product.value.stockBySize?.[size] ?? 0) <= 0
+}
 </script>
 
 <template>
@@ -108,7 +150,7 @@ const selectedSize = ref(sizes[0])
       </h1>
       <div class="flex flex-col gap-3">
         <p class="text-2xl text-zinc-900 dark:text-white font-medium tracking-tight">
-          {{ product.price }}{{ product.currency }}
+          {{ formatCurrency(product.price) }}
         </p>
         <p class="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed max-w-lg">
           {{ product.description }}
@@ -124,17 +166,21 @@ const selectedSize = ref(sizes[0])
         :icon="stockBadge.icon"
       />
       <div class="flex flex-col gap-4">
-        <p class="text-sm text-zinc-900 dark:text-white tracking-wide">
+        <p
+          v-if="selectedSize"
+          class="text-sm text-zinc-900 dark:text-white tracking-wide"
+        >
           Talla: {{ selectedSize }}
         </p>
         <div class="flex flex-row gap-2">
           <UButton
-            v-for="size in sizes"
+            v-for="size in product.availableSizes"
             :key="size"
             :variant="selectedSize === size ? 'solid' : 'subtle'"
             :label="size"
             size="xl"
             class="w-16 justify-center"
+            :disabled="isSizeSoldOut(size)"
             @click="selectedSize = size"
           />
         </div>
@@ -146,6 +192,8 @@ const selectedSize = ref(sizes[0])
           trailing-icon="i-lucide-shopping-cart"
           variant="outline"
           class="w-fit"
+          :disabled="isSoldOut"
+          @click="handleAddToCart"
         />
         <UButton
           size="xl"

@@ -1,3 +1,7 @@
+# Critical Rule: No Parallel Projects
+
+**IMPORTANT**: Do not attempt to initialize, create, or scaffold parallel projects or separate applications inside this workspace. This repository already contains the active project setup. All work must be done within the existing project structure.
+
 # Project Overview
 
 This is a **Nuxt 4** starter template tailored for an e-commerce application. It is a modern web application built with **Vue.js** and **TypeScript**. 
@@ -55,3 +59,5 @@ pnpm typecheck
   - No trailing commas (`commaDangle: 'never'`)
   - One True Brace Style (`braceStyle: '1tbs'`)
 - **Routing:** File-based routing is used via the `app/pages/` directory. The index route (`/`) is configured to be pre-rendered.
+- **UI Lifecycle & Complex Components:** For complex or persistent interactive interface structures—such as slide-over sheets, slide panels, or modals—do not rely on dynamic keys to force unmounting or component re-renders. Always implement a manual, ID-based state reset mechanism to ensure reliable lifecycle handling and prevent state persistence issues.
+- **Data Validation & State Integrity:** Maintain strict type definitions across all data layers. All e-commerce transactions, state modifications (e.g., cart operations), and form data must be strictly validated using Zod schemas prior to state commitment or execution.
