@@ -3,19 +3,30 @@ import { db } from '../../db'
 import { products } from '../../db/schema'
 
 const productSchema = z.object({
+  id: z.string().optional(),
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
-  price: z.number().positive('El precio debe de ser mayor que 0'),
-  imageUrl: z.url('Debe de ser una URL válida')
+  price: z.number().positive('El precio debe ser mayor que 0'),
+  images: z.array(z.url().min(1, 'La ruta de la imagen no puede estar vacía')).min(1, 'Debe incluir al menos una imagen'),
+  stock: z.number().int().nonnegative().default(0),
+  availableSizes: z.array(z.enum(['XS', 'S', 'M', 'L', 'XL'])).nullable().optional(),
+  stockBySize: z.record(z.string(), z.number().int().nonnegative()).nullable().optional()
 })
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-
     const validatedData = productSchema.parse(body)
 
-    const [newProduct] = await db.insert(products).values(validatedData).returning()
+    const productId = validatedData.id || validatedData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+
+    const [newProduct] = await db.insert(products).values({
+      ...validatedData,
+      id: productId
+    }).returning()
 
     setResponseStatus(event, 201)
     return newProduct

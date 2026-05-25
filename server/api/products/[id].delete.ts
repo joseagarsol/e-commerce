@@ -13,17 +13,8 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const productId = parseInt(idParam, 10)
-
-    if (isNaN(productId)) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'El ID del producto debe ser un número válido'
-      })
-    }
-
     const result = await db.delete(products)
-      .where(eq(products.id, productId))
+      .where(eq(products.id, idParam))
       .returning()
 
     if (result.length === 0) {
