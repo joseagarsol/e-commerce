@@ -2,6 +2,21 @@
 import { useCartStore } from '@/stores/cart'
 import type { Product, CartItem, Size } from '~/types/product'
 
+const route = useRoute()
+const productId = route.params.product as string
+
+const { data: product } = await useFetch<Product>(`/api/products/${productId}`)
+
+if (!product.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'El producto solicitado no existe',
+    fatal: true
+  })
+}
+
+const activeProduct = product.value
+
 const cartStore = useCartStore()
 
 definePageMeta({
@@ -15,25 +30,6 @@ const items = [
   '/collection-autumn-winter.png',
   '/collection-essentials.png'
 ]
-
-const product = ref<Product>(
-  {
-    id: 'UIDAD2322',
-    name: 'Camiseta oversize blanco mujer',
-    price: 100,
-    description: 'Esta lujosa camiseta oversize redefine el estilo cotidiano con su silueta moderna y relajada. Confeccionada con un algodón de peso medio que ofrece una caída impecable, es la pieza esencial definitiva para un look sofisticado y minimalista.',
-    images: items,
-    stock: 13,
-    availableSizes: ['XS', 'S', 'M', 'L', 'XL'],
-    stockBySize: {
-      XS: 0,
-      S: 2,
-      M: 3,
-      L: 5,
-      XL: 3
-    }
-  }
-)
 
 const getStockBadge = (stock: number) => {
   if (stock <= 5) {
@@ -53,7 +49,7 @@ const getStockBadge = (stock: number) => {
   return null
 }
 
-const stockBadge = getStockBadge(product.value.stock)
+const stockBadge = getStockBadge(activeProduct.stock)
 
 const carousel = useTemplateRef('carousel')
 const activeIndex = ref(0)
@@ -76,11 +72,11 @@ function select(index: number) {
   carousel.value?.emblaApi?.scrollTo(index)
 }
 
-const selectedSize = ref<Size | null>(product.value.availableSizes?.[0] ?? null)
+const selectedSize = ref<Size | null>(activeProduct.availableSizes?.[0] ?? null)
 
 const handleAddToCart = () => {
   const cartItem: CartItem = {
-    ...product.value,
+    ...activeProduct,
     selectedSize: selectedSize.value,
     quantity: 1
   }
@@ -90,25 +86,25 @@ const handleAddToCart = () => {
 }
 
 const isSoldOut = computed(() => {
-  const qtyInCart = cartStore.getItemQuantity(product.value.id, selectedSize.value)
+  const qtyInCart = cartStore.getItemQuantity(activeProduct.id, selectedSize.value)
 
   // Producto con tallas
-  if (product.value.stockBySize) {
+  if (activeProduct.stockBySize) {
     if (!selectedSize.value) return true
-    const stockAvailable = product.value.stockBySize[selectedSize.value] ?? 0
+    const stockAvailable = activeProduct.stockBySize[selectedSize.value] ?? 0
     return stockAvailable <= qtyInCart
   }
   // Producto sin tallas
-  return product.value.stock <= qtyInCart
+  return activeProduct.stock <= qtyInCart
 })
 
 const isSizeSoldOut = (size: Size) => {
-  return (product.value.stockBySize?.[size] ?? 0) <= 0
+  return (activeProduct.stockBySize?.[size] ?? 0) <= 0
 }
 </script>
 
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div v-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-8">
     <div class="product-image">
       <UCarousel
         ref="carousel"
