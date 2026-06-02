@@ -1,21 +1,15 @@
 <script setup lang="ts">
-const collections = [
-  {
-    title: 'Primavera Verano 2026',
-    image: '/collection-spring-summer.png',
-    link: '/collections/primavera-verano-2026'
-  },
-  {
-    title: 'Otoño Invierno 2025',
-    image: '/collection-autumn-winter.png',
-    link: '/collections/otono-invierno-2025'
-  },
-  {
-    title: 'Esenciales',
-    image: '/collection-essentials.png',
-    link: '/collections/esenciales'
-  }
-]
+import type { Collection } from '~/types/collection'
+
+const { data: collections } = await useFetch<Collection[]>('/api/collections')
+
+if (!collections.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'No se han encontrado colecciones',
+    fatal: true
+  })
+}
 </script>
 
 <template>
@@ -27,20 +21,20 @@ const collections = [
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
         <NuxtLink
           v-for="collection in collections"
-          :key="collection.link"
-          :to="collection.link"
+          :key="collection.id"
+          :to="'/collections/'+collection.id"
           class="group collection-card flex flex-col gap-6"
         >
           <div class="relative overflow-hidden rounded-md shadow-lg aspect-[3/4]">
             <NuxtImg
-              :src="collection.image"
-              :alt="`Colección ${collection.title}`"
+              :src="collection.imageUrl || '/collection-essentials.png'"
+              :alt="`Colección ${collection.name}`"
               class="w-full h-full object-cover rounded-md group-hover:scale-105 transition-transform duration-1000 ease-out"
             />
           </div>
           <div>
             <p class="text-center text-3xl font-serif font-normal text-zinc-900 dark:text-white tracking-wide">
-              {{ collection.title }}
+              {{ collection.name }}
             </p>
           </div>
           <div class="flex justify-center">

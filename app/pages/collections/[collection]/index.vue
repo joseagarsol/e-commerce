@@ -10,7 +10,7 @@ const slug = route.params.collection as string
 
 const parseSlug = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 
-const { data: products } = await useFetch<Product[]>('/api/products')
+const { data: products } = await useFetch<Product[]>('/api/products?collection=' + slug)
 </script>
 
 <template>
