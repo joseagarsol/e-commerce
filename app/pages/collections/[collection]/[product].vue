@@ -104,7 +104,10 @@ const isSizeSoldOut = (size: Size) => {
 </script>
 
 <template>
-  <div v-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div
+    v-if="product"
+    class="grid grid-cols-1 md:grid-cols-2 gap-8"
+  >
     <div class="product-image">
       <UCarousel
         ref="carousel"

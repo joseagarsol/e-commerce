@@ -1,58 +1,53 @@
-const APPLY_PROMO = {
-  shipping: 'shipping',
-  cartPrice: 'cartPrice'
-}
+import { FetchError } from 'ofetch'
+import type { Promotion } from '~/types/promotion'
+import type { ApiResponse } from '~/types/api'
 
-const DISCOUNT_TYPE = {
-  percent: 'percent',
-  price: 'price'
-}
-
-interface Promotion {
-  code: string
-  description: string
-  discountType: typeof DISCOUNT_TYPE[keyof typeof DISCOUNT_TYPE]
-  apply: typeof APPLY_PROMO[keyof typeof APPLY_PROMO]
-  discount: number
-}
 export function usePromotions() {
-  const promotions: Promotion[] = [
-    {
-      code: 'FREE-SHIPPING',
-      description: 'Envío gratis',
-      discountType: DISCOUNT_TYPE.price,
-      apply: APPLY_PROMO.shipping,
-      discount: 3.99
-    },
-    {
-      code: 'WELCOME',
-      description: '10% de descuento',
-      discountType: DISCOUNT_TYPE.percent,
-      apply: APPLY_PROMO.cartPrice,
-      discount: 0.10
-    }
-  ]
-
   const errorPromo = useState<string | null>('errorPromo', () => null)
   const promoCode = useState<string>('promoCode', () => '')
   const promo = useState<Promotion | null>('promo', () => null)
 
-  const applyPromotions = () => {
-    const promotion = promotions.find(promotion => promotion.code === promoCode.value)
-    if (!promotion) {
-      errorPromo.value = 'Código de promoción no válido'
+  const applyPromotions = async () => {
+    if (!promoCode.value.trim()) {
+      errorPromo.value = 'Introduce un código de descuento'
       promo.value = null
       return
     }
-    errorPromo.value = null
-    promo.value = promotion
+
+    try {
+      errorPromo.value = null
+      const response = await $fetch<ApiResponse<Promotion>>('/api/discount-codes/validate', {
+        method: 'POST',
+        body: {
+          code: promoCode.value
+        }
+      })
+
+      if (response.success && response.data) {
+        const coupon = response.data
+
+        promo.value = coupon
+      }
+    } catch (error) {
+      promo.value = null
+
+      if (error instanceof FetchError && error.data?.statusMessage) {
+        errorPromo.value = error.data.statusMessage
+      } else {
+        errorPromo.value = 'Código de promoción no válido'
+      }
+    }
   }
 
-  const getDiscountedPrice = (price: number, discountType: typeof DISCOUNT_TYPE[keyof typeof DISCOUNT_TYPE], amount: number) => {
+  const getDiscountedPrice = (
+    price: number,
+    discountType: Promotion['discountType'],
+    amount: number
+  ) => {
     switch (discountType) {
-      case DISCOUNT_TYPE.percent:
+      case 'percent':
         return price - (price * amount)
-      case DISCOUNT_TYPE.price:
+      case 'price':
         return price - amount
       default:
         return price

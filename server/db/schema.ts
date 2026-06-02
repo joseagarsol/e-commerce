@@ -1,5 +1,13 @@
 import { sqliteTable, text, real, integer } from 'drizzle-orm/sqlite-core'
 
+export const discountCodes = sqliteTable('discount_codes', {
+  id: text('id').primaryKey(),
+  code: text('code').notNull().unique(),
+  discountType: text('discount_type', { enum: ['percent', 'price'] }).notNull(),
+  apply: text('apply', { enum: ['shipping', 'cartPrice'] }).notNull(),
+  discount: real('discount').notNull()
+})
+
 export const collections = sqliteTable('collections', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
