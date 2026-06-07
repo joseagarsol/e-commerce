@@ -31,6 +31,8 @@ const handleDeleteProduct = async (id: string) => {
     alert('No se pudo eliminar el producto de la base de datos')
   }
 }
+
+const isAddProductOpen = ref(false)
 </script>
 
 <template>
@@ -113,11 +115,29 @@ const handleDeleteProduct = async (id: string) => {
             <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">
               Listado de Prendas
             </h2>
-            <UButton
-              label="Añadir Prenda"
-              icon="i-lucide-plus"
-              size="md"
-            />
+            <UModal
+              v-model:open="isAddProductOpen"
+              title="Añadir Nueva Prenda"
+              :close="{
+                color: 'neutral',
+                variant: 'outline',
+                class: 'rounded-full cursor-pointer'
+              }"
+            >
+              <UButton
+                label="Añadir Prenda"
+                icon="i-lucide-plus"
+                size="md"
+                class="cursor-pointer"
+                @click="isAddProductOpen = true"
+              />
+              <template #body>
+                <AdminAddProductModal
+                  :collections="collections || []"
+                  @success="isAddProductOpen = false; refreshNuxtData()"
+                />
+              </template>
+            </UModal>
           </div>
           <AdminProductsTable
             :products="products"
