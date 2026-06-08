@@ -90,7 +90,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   <UForm
     :schema="schema"
     :state="state"
-    :validate-on="['blur']"
+    :validate-on="['change']"
     class="space-y-5"
     @submit="onSubmit"
   >
@@ -161,7 +161,10 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       label="Imágenes de la prenda"
       name="images"
     >
-      <AdminImageUploader v-model="state.images" />
+      <AdminImageUploader
+        v-model="state.images"
+        multiple
+      />
     </UFormField>
 
     <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">

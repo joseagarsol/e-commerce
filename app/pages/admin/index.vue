@@ -32,7 +32,21 @@ const handleDeleteProduct = async (id: string) => {
   }
 }
 
+const handleDeleteCollection = async (id: string) => {
+  if (!confirm('¿Estás seguro de que deseas eliminar esta colección de forma permanente?')) return
+  try {
+    await $fetch(`/api/collections/${id}`, {
+      method: 'DELETE'
+    })
+    await refreshNuxtData()
+  } catch (error) {
+    console.error('Error deleting collection:', error)
+    alert('No se pudo eliminar la colección de la base de datos')
+  }
+}
+
 const isAddProductOpen = ref(false)
+const isAddCollectionOpen = ref(false)
 </script>
 
 <template>
@@ -152,15 +166,33 @@ const isAddProductOpen = ref(false)
             <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">
               Colecciones Disponibles
             </h2>
-            <UButton
-              label="Nueva Colección"
-              icon="i-lucide-plus"
-              size="md"
-            />
+            <UModal
+              v-model:open="isAddCollectionOpen"
+              title="Añadir Nueva Colección"
+              :close="{
+                color: 'neutral',
+                variant: 'outline',
+                class: 'rounded-full cursor-pointer'
+              }"
+            >
+              <UButton
+                label="Nueva Colección"
+                icon="i-lucide-plus"
+                size="md"
+                class="cursor-pointer"
+                @click="isAddCollectionOpen = true"
+              />
+              <template #body>
+                <AdminAddCollectionModal
+                  @success="isAddCollectionOpen = false; refreshNuxtData()"
+                />
+              </template>
+            </UModal>
           </div>
-          <p class="text-sm text-zinc-400 italic">
-            Gestión de colecciones en desarrollo...
-          </p>
+          <AdminCollectionsTable
+            :collections="collections"
+            @delete="handleDeleteCollection"
+          />
         </div>
       </template>
 
