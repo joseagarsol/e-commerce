@@ -31,6 +31,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Promotion>>
       success: true,
       message: 'Código de descuento aplicado con éxito',
       data: {
+        id: discountCode.id,
         code: discountCode.code,
         discount: discountCode.discount,
         discountType: discountCode.discountType,

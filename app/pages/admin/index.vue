@@ -45,8 +45,22 @@ const handleDeleteCollection = async (id: string) => {
   }
 }
 
+const handleDeleteCoupon = async (id: string) => {
+  if (!confirm('¿Estás seguro de que deseas eliminar este cupón de forma permanente?')) return
+  try {
+    await $fetch(`/api/discount-codes/${id}`, {
+      method: 'DELETE'
+    })
+    await refreshNuxtData()
+  } catch (error) {
+    console.error('Error deleting coupon:', error)
+    alert('No se pudo eliminar el cupón de la base de datos')
+  }
+}
+
 const isAddProductOpen = ref(false)
 const isAddCollectionOpen = ref(false)
+const isAddCouponOpen = ref(false)
 </script>
 
 <template>
@@ -202,15 +216,33 @@ const isAddCollectionOpen = ref(false)
             <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">
               Códigos de Descuento
             </h2>
-            <UButton
-              label="Crear Cupón"
-              icon="i-lucide-plus"
-              size="md"
-            />
+            <UModal
+              v-model:open="isAddCouponOpen"
+              title="Añadir Nuevo Cupón"
+              :close="{
+                color: 'neutral',
+                variant: 'outline',
+                class: 'rounded-full cursor-pointer'
+              }"
+            >
+              <UButton
+                label="Nuevo Cupón"
+                icon="i-lucide-plus"
+                size="md"
+                class="cursor-pointer"
+                @click="isAddCouponOpen = true"
+              />
+              <template #body>
+                <AdminAddCouponModal
+                  @success="isAddCouponOpen = false; refreshNuxtData()"
+                />
+              </template>
+            </UModal>
           </div>
-          <p class="text-sm text-zinc-400 italic">
-            Gestión de cupones en desarrollo...
-          </p>
+          <AdminDiscountCodesTable
+            :coupons="coupons"
+            @delete="handleDeleteCoupon"
+          />
         </div>
       </template>
     </UTabs>
