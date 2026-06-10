@@ -51,9 +51,13 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    if (error instanceof Error) {
+      throw error
+    }
+
     throw createError({
       statusCode: 500,
-      statusMessage: 'Error al registrar el usuario'
+      statusMessage: 'Error al iniciar sesión'
     })
   }
 })

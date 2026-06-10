@@ -40,6 +40,16 @@ export default defineEventHandler(async (event) => {
       passwordHash,
       role: 'customer'
     })
+
+    const session = await getAuthSession(event)
+    await session.update({ userId })
+
+    return {
+      id: userId,
+      name,
+      email: normalizedEmail,
+      role: 'customer'
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)
@@ -49,6 +59,10 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Datos de usuario inválidos',
         data: flattened.fieldErrors
       })
+    }
+
+    if (error instanceof Error) {
+      throw error
     }
 
     throw createError({

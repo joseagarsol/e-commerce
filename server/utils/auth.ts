@@ -21,6 +21,6 @@ export async function getAuthSession(event: H3Event) {
 
   return await useSession<{ userId: string }>(event, {
     name: 'session',
-    password: config.sessionSecret
+    password: config.sessionPassword
   })
 }
