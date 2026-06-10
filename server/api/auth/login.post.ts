@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     if (!user || !verifyPassword(password, user.passwordHash)) {
       throw createError({
         statusCode: 401,
-        statusMessage: 'El correo electrónico o la contraseña son incorrectos'
+        statusMessage: 'El correo electrónico o la contraseña no son incorrectos'
       })
     }
 

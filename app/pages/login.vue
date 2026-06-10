@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { useAuthStore } from '~/stores/auth'
+import { FetchError } from 'ofetch'
+
+const authStore = useAuthStore()
+const toast = useToast()
 
 const schema = z.object({
   email: z.email(),
@@ -17,9 +22,31 @@ const state = reactive<Partial<Schema>>({
 })
 
 const showPassword = ref(false)
+const isSubmit = ref(false)
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log(event.data)
+  isSubmit.value = true
+  toast.clear()
+
+  try {
+    await authStore.login(event.data)
+    await navigateTo('/')
+  } catch (error) {
+    let description = 'No se pudo iniciar sesión. Por favor, inténtelo de nuevo.'
+
+    if (error instanceof FetchError && error.data.statusMessage) {
+      description = error.data.statusMessage
+    }
+
+    toast.add({
+      title: 'Error al iniciar sesión',
+      description,
+      color: 'error',
+      duration: 0
+    })
+  } finally {
+    isSubmit.value = false
+  }
 }
 </script>
 
@@ -102,6 +129,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             label="Acceder"
             color="primary"
             block
+            :loading="isSubmit"
           />
         </UForm>
         <template #footer>
