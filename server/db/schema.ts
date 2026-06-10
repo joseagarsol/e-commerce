@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm'
 import { sqliteTable, text, real, integer } from 'drizzle-orm/sqlite-core'
 
 export const discountCodes = sqliteTable('discount_codes', {
@@ -25,4 +26,14 @@ export const products = sqliteTable('products', {
   availableSizes: text('available_sizes', { mode: 'json' }).$type<string[] | null>(),
   stockBySize: text('stock_by_size', { mode: 'json' }).$type<Record<string, number> | null>(),
   collectionId: text('collection_id').references(() => collections.id)
+})
+
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  role: text('role', { enum: ['admin', 'customer'] })
+    .notNull().default('customer'),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`)
 })
