@@ -3,6 +3,10 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { FetchError } from 'ofetch'
 
+definePageMeta({
+  middleware: 'guest'
+})
+
 const authStore = useAuthStore()
 const toast = useToast()
 
