@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { FetchError } from 'ofetch'
+
+const authStore = useAuthStore()
+const toast = useToast()
 
 const schema = z
   .object({
@@ -33,9 +37,31 @@ const state = reactive<Partial<Schema>>({
 
 const showPassword = ref(false)
 const showPasswordConfirmation = ref(false)
+const isSubmit = ref(false)
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
-  console.log(event.data)
+  isSubmit.value = true
+  toast.clear()
+
+  try {
+    await authStore.register(event.data)
+    await navigateTo('/')
+  } catch (error) {
+    let description = 'No se pudo registrar el usuario. Por favor, inténtelo de nuevo.'
+
+    if (error instanceof FetchError && error.data.statusMessage) {
+      description = error.data.statusMessage
+    }
+
+    toast.add({
+      title: 'Error al registrar el usuario',
+      description,
+      color: 'error',
+      duration: 0
+    })
+  } finally {
+    isSubmit.value = false
+  }
 }
 </script>
 
@@ -154,6 +180,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             label="Registrarse"
             color="primary"
             block
+            :loading="isSubmit"
           />
         </UForm>
         <template #footer>
