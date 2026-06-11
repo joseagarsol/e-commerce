@@ -4,6 +4,10 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import { useAuthStore } from '~/stores/auth'
 import { FetchError } from 'ofetch'
 
+definePageMeta({
+  middleware: 'guest'
+})
+
 const authStore = useAuthStore()
 const toast = useToast()
 

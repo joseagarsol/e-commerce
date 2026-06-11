@@ -2,6 +2,10 @@
 import * as z from 'zod'
 import type { RadioGroupItem, FormSubmitEvent } from '@nuxt/ui'
 
+definePageMeta({
+  middleware: 'auth'
+})
+
 const cartStore = useCartStore()
 const { getDiscountedPrice, promo } = usePromotions()
 

@@ -3,6 +3,10 @@ import type { Product } from '~/types/product'
 import type { Collection } from '~/types/collection'
 import type { Promotion } from '~/types/promotion'
 
+definePageMeta({
+  middleware: 'admin'
+})
+
 const [
   { data: products },
   { data: collections },
