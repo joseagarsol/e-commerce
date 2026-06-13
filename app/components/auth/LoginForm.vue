@@ -2,6 +2,8 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
+const authStore = useAuthStore()
+
 const emit = defineEmits(['handleUserEmail'])
 
 const schema = z.object({
@@ -14,8 +16,13 @@ const state = reactive<Partial<Schema>>({
   email: undefined
 })
 
+const isSubmitting = ref<boolean>(false)
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  if (event.data.email === 'jose@jose.com') {
+  isSubmitting.value = true
+  const isFound = await authStore.checkUserEmail(event.data.email)
+  isSubmitting.value = false
+  if (isFound) {
     emit('handleUserEmail', event.data.email)
     return
   }
@@ -46,6 +53,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       label="Continuar"
       color="primary"
       block
+      :loading="isSubmitting"
     />
   </UForm>
   <USeparator

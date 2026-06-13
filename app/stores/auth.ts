@@ -1,5 +1,10 @@
 import type { User, LoginForm, RegisterForm } from '~/types/auth'
 
+interface CheckEmailResponse {
+  isFound: boolean
+  user?: User
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
 
@@ -15,6 +20,18 @@ export const useAuthStore = defineStore('auth', () => {
     } catch {
       user.value = null
     }
+  }
+
+  async function checkUserEmail(email: string) {
+    const response = await $fetch<CheckEmailResponse>('/api/auth/email', {
+      params: {
+        email
+      }
+    })
+    if (response.isFound) {
+      return true
+    }
+    return false
   }
 
   async function login(fields: LoginForm) {
@@ -48,6 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUser,
     login,
     register,
-    logout
+    logout,
+    checkUserEmail
   }
 })
