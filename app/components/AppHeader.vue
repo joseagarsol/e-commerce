@@ -50,13 +50,17 @@ const cartCount = computed(() => cartStore.products.length)
       class="hidden lg:flex tracking-wide hover:text-primary"
     />
     <template #right>
-      <UPopover :content="{ align: 'end', side: 'bottom', sideOffset: 8 }">
+      <UPopover :content="{ align: 'end', side: 'bottom', sideOffset: 12 }">
         <UButton
           color="primary"
-          icon="i-lucide-user"
           variant="ghost"
-          class="transition-transform hover:scale-110 active:scale-90"
-        />
+          class="group"
+        >
+          <UIcon
+            name="i-lucide-user"
+            class="size-5 transition-transform group-hover:scale-110 group-active:scale-90"
+          />
+        </UButton>
         <template #content>
           <AuthLoginRegister />
         </template>
@@ -72,14 +76,19 @@ const cartCount = computed(() => cartStore.products.length)
         <UChip
           :show="cartCount > 0"
           :text="cartCount"
-          size="md"
+          size="2xl"
+          :ui="{ base: 'size-4 text-xs text-gray-900' }"
         >
           <UButton
             color="primary"
-            icon="i-lucide-shopping-cart"
             variant="ghost"
-            class="transition-transform hover:scale-110 active:scale-90"
-          />
+            class="group"
+          >
+            <UIcon
+              name="i-lucide-shopping-cart"
+              class="size-5 transition-transform group-hover:scale-110 group-active:scale-90"
+            />
+          </UButton>
         </UChip>
         <template #header>
           <CartHeader />
