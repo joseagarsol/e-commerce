@@ -7,7 +7,7 @@ const authStore = useAuthStore()
   <div class="p-4 min-w-[350px]">
     <div v-if="!authStore.isAuthenticated">
       <p class="font-light tracking-wide leading-relaxed ">
-        Inicio de sesión / Registro {{ authStore.isAuthenticated }}
+        Inicio de sesión / Registro
       </p>
       <USeparator class="my-3" />
       <AuthLoginForm
