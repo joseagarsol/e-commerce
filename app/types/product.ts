@@ -9,6 +9,7 @@ export interface Product {
   stock: number
   availableSizes: Size[] | null
   stockBySize: Partial<Record<Size, number>> | null
+  collectionId?: string
 }
 
 export interface CartItem extends Product {

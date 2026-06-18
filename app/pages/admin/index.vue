@@ -23,6 +23,8 @@ const tabs = [
   { label: 'Cupones de Descuento', icon: 'i-lucide-tag', slot: 'coupons' }
 ]
 
+const selectedProduct = ref<Product | null>(null)
+
 const handleDeleteProduct = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar esta prenda de forma permanente?')) return
   try {
@@ -34,6 +36,11 @@ const handleDeleteProduct = async (id: string) => {
     console.error('Error deleting product:', error)
     alert('No se pudo eliminar el producto de la base de datos')
   }
+}
+
+const handleEditProduct = (product: Product) => {
+  isAddProductOpen.value = true
+  selectedProduct.value = product
 }
 
 const handleDeleteCollection = async (id: string) => {
@@ -62,9 +69,21 @@ const handleDeleteCoupon = async (id: string) => {
   }
 }
 
+const handleSuccessAction = () => {
+  isAddProductOpen.value = false
+  selectedProduct.value = null
+  refreshNuxtData()
+}
+
 const isAddProductOpen = ref(false)
 const isAddCollectionOpen = ref(false)
 const isAddCouponOpen = ref(false)
+
+watch(isAddProductOpen, (isOpen) => {
+  if (!isOpen) {
+    selectedProduct.value = null
+  }
+})
 </script>
 
 <template>
@@ -166,7 +185,9 @@ const isAddCouponOpen = ref(false)
               <template #body>
                 <AdminAddProductModal
                   :collections="collections || []"
-                  @success="isAddProductOpen = false; refreshNuxtData()"
+                  :product="selectedProduct"
+                  @success="handleSuccessAction"
+                  @cancel="isAddProductOpen = false"
                 />
               </template>
             </UModal>
@@ -174,6 +195,7 @@ const isAddCouponOpen = ref(false)
           <AdminProductsTable
             :products="products"
             @delete="handleDeleteProduct"
+            @edit="handleEditProduct"
           />
         </div>
       </template>
