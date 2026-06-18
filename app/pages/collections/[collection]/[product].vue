@@ -25,12 +25,6 @@ definePageMeta({
 
 const isWishlisted = ref(false)
 
-const items = [
-  '/collection-spring-summer.png',
-  '/collection-autumn-winter.png',
-  '/collection-essentials.png'
-]
-
 const getStockBadge = (stock: number) => {
   if (stock <= 5) {
     return {
@@ -127,7 +121,7 @@ const isSizeSoldOut = (size: Size) => {
       </UCarousel>
       <div class="flex justify-center gap-1 pt-4 mx-auto">
         <div
-          v-for="(item, index) in items"
+          v-for="(item, index) in product.images"
           :key="index"
           class="size-11 opacity-25 hover:opacity-100 transition-opacity"
           :class="{ 'opacity-100': activeIndex === index }"
@@ -137,7 +131,7 @@ const isSizeSoldOut = (size: Size) => {
             :src="item"
             width="44"
             height="44"
-            class="rounded-lg"
+            class="rounded-lg aspect-4/5 object-cover"
             loading="lazy"
           >
         </div>
