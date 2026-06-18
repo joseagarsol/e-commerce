@@ -25,6 +25,7 @@ const tabs = [
 
 const selectedProduct = ref<Product | null>(null)
 const selectedCollection = ref<Collection | null>(null)
+const selectedCoupon = ref<Promotion | null>(null)
 
 const handleDeleteProduct = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar esta prenda de forma permanente?')) return
@@ -62,6 +63,11 @@ const handleEditCollection = (collection: Collection) => {
   selectedCollection.value = collection
 }
 
+const handleEditCoupon = (coupon: Promotion) => {
+  isAddCouponOpen.value = true
+  selectedCoupon.value = coupon
+}
+
 const handleDeleteCoupon = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este cupón de forma permanente?')) return
   try {
@@ -87,6 +93,12 @@ const handleSuccessCollectionAction = () => {
   refreshNuxtData()
 }
 
+const handleSuccessCouponAction = () => {
+  isAddCouponOpen.value = false
+  selectedCoupon.value = null
+  refreshNuxtData()
+}
+
 const isAddProductOpen = ref(false)
 const isAddCollectionOpen = ref(false)
 const isAddCouponOpen = ref(false)
@@ -100,6 +112,12 @@ watch(isAddProductOpen, (isOpen) => {
 watch(isAddCollectionOpen, (isOpen) => {
   if (!isOpen) {
     selectedCollection.value = null
+  }
+})
+
+watch(isAddCouponOpen, (isOpen) => {
+  if (!isOpen) {
+    selectedCoupon.value = null
   }
 })
 </script>
@@ -281,7 +299,9 @@ watch(isAddCollectionOpen, (isOpen) => {
               />
               <template #body>
                 <AdminAddCouponModal
-                  @success="isAddCouponOpen = false; refreshNuxtData()"
+                  :coupon="selectedCoupon"
+                  @success="handleSuccessCouponAction"
+                  @cancel="isAddCouponOpen = false"
                 />
               </template>
             </UModal>
@@ -289,6 +309,7 @@ watch(isAddCollectionOpen, (isOpen) => {
           <AdminDiscountCodesTable
             :coupons="coupons"
             @delete="handleDeleteCoupon"
+            @edit="handleEditCoupon"
           />
         </div>
       </template>

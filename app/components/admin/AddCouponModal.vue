@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, SelectItem } from '@nuxt/ui'
+import type { Promotion } from '~/types/promotion'
 import * as z from 'zod'
 
+interface AddCouponModalProps {
+  coupon?: Promotion | null
+}
+
+const props = defineProps<AddCouponModalProps>()
+
 const emit = defineEmits<{
-  (e: 'success'): void
+  (e: 'success' | 'cancel'): void
 }>()
 
 const isSubmitting = ref(false)
@@ -34,10 +41,10 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-  code: '',
-  discountType: 'percent',
-  apply: 'cartPrice',
-  discount: undefined
+  code: props.coupon?.code || '',
+  discountType: props.coupon?.discountType || 'percent',
+  apply: props.coupon?.apply || 'cartPrice',
+  discount: props.coupon?.discount || undefined
 })
 
 const discountTypeItems: SelectItem[] = [
@@ -54,6 +61,13 @@ watch(() => state.code, (newVal) => {
   if (newVal) {
     state.code = newVal.toUpperCase().replace(/[^A-Z0-9_-]/g, '')
   }
+})
+
+watch(() => props.coupon, (newCoupon) => {
+  state.code = newCoupon?.code || ''
+  state.discountType = newCoupon?.discountType || 'percent'
+  state.apply = newCoupon?.apply || 'cartPrice'
+  state.discount = newCoupon?.discount || undefined
 })
 
 const discountLabel = computed(() => {
@@ -76,18 +90,25 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       discount: event.data.discount
     }
 
-    await $fetch('/api/discount-codes', {
-      method: 'POST',
-      body: payload
-    })
-
-    state.code = ''
-    state.discountType = 'percent'
-    state.apply = 'cartPrice'
-    state.discount = undefined
+    if (props.coupon) {
+      await $fetch(`/api/discount-codes/${props.coupon.id}`, {
+        method: 'PUT',
+        body: payload
+      })
+      alert('¡Cupón actualizado con éxito!')
+    } else {
+      await $fetch('/api/discount-codes', {
+        method: 'POST',
+        body: payload
+      })
+      state.code = ''
+      state.discountType = 'percent'
+      state.apply = 'cartPrice'
+      state.discount = undefined
+      alert('¡Cupón creado con éxito!')
+    }
 
     emit('success')
-    alert('¡Cupón creado con éxito!')
   } catch (error) {
     console.error('Error al guardar el cupón:', error)
     alert('No se pudo guardar el cupón en la base de datos')
@@ -159,11 +180,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         color="neutral"
         variant="ghost"
         class="cursor-pointer"
-        @click="emit('success')"
+        @click="emit('cancel')"
       />
       <UButton
         type="submit"
-        label="Crear Cupón"
+        :label="coupon ? 'Guardar Cambios' : 'Crear Cupón'"
         color="primary"
         class="cursor-pointer"
         :loading="isSubmitting"
