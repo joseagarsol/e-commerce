@@ -9,6 +9,7 @@ const productSchema = z.object({
   price: z.number().positive('El precio debe ser mayor que 0'),
   images: z.array(z.string().min(1, 'La ruta de la imagen no puede estar vacía')).min(1, 'Debe incluir al menos una imagen'),
   stock: z.number().int().nonnegative().default(0),
+  collectionId: z.string().min(1, 'La colección del producto debe ser especificada'),
   availableSizes: z.array(z.enum(['XS', 'S', 'M', 'L', 'XL'])).nullable().optional(),
   stockBySize: z.record(z.string(), z.number().int().nonnegative()).nullable().optional()
 })

@@ -16,8 +16,18 @@ const emit = defineEmits<{
 }>()
 
 const isSubmitting = ref(false)
+const hasSizes = ref(!!props.product?.stockBySize)
 
-const schema = z.object({
+const stockBySizeSchema = z.record(
+  z.string(),
+  z.number({ message: 'La cantidad debe ser un número' })
+    .int().nonnegative({ message: 'La cantidad no puede ser negativa' })
+).refine(
+  val => Object.keys(val || {}).length > 0,
+  { message: 'Debes seleccionar al menos una talla y especificar su cantidad' }
+)
+
+const schema = (hasSizesVal: boolean) => z.object({
   name: z.string()
     .min(3, 'El nombre del producto debe tener al menos 3 caracteres'),
   description: z.string()
@@ -28,10 +38,11 @@ const schema = z.object({
   stock: z.number({ message: 'El stock debe ser un número' })
     .int().nonnegative('El stock no puede ser negativo'),
   collectionId: z.string()
-    .min(1, 'Debes seleccionar una colección')
+    .min(1, 'Debes seleccionar una colección'),
+  stockBySize: hasSizesVal ? stockBySizeSchema : stockBySizeSchema.nullable()
 })
 
-type Schema = z.output<typeof schema>
+type Schema = z.output<ReturnType<typeof schema>>
 
 const state = reactive<Partial<Schema>>({
   name: props.product?.name || '',
@@ -39,7 +50,24 @@ const state = reactive<Partial<Schema>>({
   price: props.product?.price || undefined,
   images: props.product?.images || [],
   stock: props.product?.stock || undefined,
-  collectionId: props.product?.collectionId || ''
+  collectionId: props.product?.collectionId || '',
+  stockBySize: props.product?.stockBySize || null
+})
+
+watch(() => state.stockBySize, (newStockBySize) => {
+  if (hasSizes.value && newStockBySize) {
+    state.stock = Object.values(newStockBySize).reduce((acc: number, qty) => acc + (qty || 0), 0)
+  }
+}, { deep: true })
+
+watch(hasSizes, (newHasSizes) => {
+  if (newHasSizes) {
+    state.stockBySize = state.stockBySize || {}
+    state.stock = Object.values(state.stockBySize).reduce((acc: number, qty) => acc + (qty || 0), 0)
+  } else {
+    state.stockBySize = null
+    state.stock = undefined
+  }
 })
 
 const selectItems = computed<SelectItem[]>(() => {
@@ -62,7 +90,9 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       price: event.data.price,
       images: event.data.images,
       stock: event.data.stock,
-      collectionId: event.data.collectionId
+      collectionId: event.data.collectionId,
+      availableSizes: hasSizes.value && state.stockBySize ? Object.keys(state.stockBySize) : null,
+      stockBySize: hasSizes.value ? state.stockBySize : null
     }
 
     if (props.product) {
@@ -97,6 +127,8 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       state.images = []
       state.stock = undefined
       state.collectionId = undefined
+      state.stockBySize = null
+      hasSizes.value = false
 
       alert('¡Prenda guardada con éxito!')
     }
@@ -117,6 +149,8 @@ watch(() => props.product, (newProduct) => {
   state.images = newProduct?.images || []
   state.stock = newProduct?.stock || undefined
   state.collectionId = newProduct?.collectionId || ''
+  state.stockBySize = newProduct?.stockBySize || null
+  hasSizes.value = !!newProduct?.stockBySize
 })
 
 const filesToDelete = ref<string[]>([])
@@ -146,7 +180,7 @@ const removeExistingImage = (index: number) => {
 
 <template>
   <UForm
-    :schema="schema"
+    :schema="schema(hasSizes)"
     :state="state"
     :validate-on="['change']"
     class="space-y-5"
@@ -190,6 +224,7 @@ const removeExistingImage = (index: number) => {
       </UFormField>
 
       <UFormField
+        v-if="!hasSizes"
         :label="product ? 'Stock Actual' : 'Stock Inicial'"
         name="stock"
       >
@@ -214,6 +249,21 @@ const removeExistingImage = (index: number) => {
         class="w-full"
       />
     </UFormField>
+
+    <div>
+      <USwitch
+        v-model="hasSizes"
+        label="Este producto tiene tallas"
+      />
+    </div>
+
+    <div v-if="hasSizes">
+      <UFormField
+        name="stockBySize"
+      >
+        <AdminSizeSelector v-model="state.stockBySize" />
+      </UFormField>
+    </div>
 
     <UFormField
       label="Imágenes de la prenda"
