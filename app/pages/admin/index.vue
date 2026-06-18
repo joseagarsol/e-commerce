@@ -23,6 +23,10 @@ const tabs = [
   { label: 'Cupones de Descuento', icon: 'i-lucide-tag', slot: 'coupons' }
 ]
 
+const selectedProduct = ref<Product | null>(null)
+const selectedCollection = ref<Collection | null>(null)
+const selectedCoupon = ref<Promotion | null>(null)
+
 const handleDeleteProduct = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar esta prenda de forma permanente?')) return
   try {
@@ -34,6 +38,11 @@ const handleDeleteProduct = async (id: string) => {
     console.error('Error deleting product:', error)
     alert('No se pudo eliminar el producto de la base de datos')
   }
+}
+
+const handleEditProduct = (product: Product) => {
+  isAddProductOpen.value = true
+  selectedProduct.value = product
 }
 
 const handleDeleteCollection = async (id: string) => {
@@ -49,6 +58,16 @@ const handleDeleteCollection = async (id: string) => {
   }
 }
 
+const handleEditCollection = (collection: Collection) => {
+  isAddCollectionOpen.value = true
+  selectedCollection.value = collection
+}
+
+const handleEditCoupon = (coupon: Promotion) => {
+  isAddCouponOpen.value = true
+  selectedCoupon.value = coupon
+}
+
 const handleDeleteCoupon = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este cupón de forma permanente?')) return
   try {
@@ -62,9 +81,45 @@ const handleDeleteCoupon = async (id: string) => {
   }
 }
 
+const handleSuccessAction = () => {
+  isAddProductOpen.value = false
+  selectedProduct.value = null
+  refreshNuxtData()
+}
+
+const handleSuccessCollectionAction = () => {
+  isAddCollectionOpen.value = false
+  selectedCollection.value = null
+  refreshNuxtData()
+}
+
+const handleSuccessCouponAction = () => {
+  isAddCouponOpen.value = false
+  selectedCoupon.value = null
+  refreshNuxtData()
+}
+
 const isAddProductOpen = ref(false)
 const isAddCollectionOpen = ref(false)
 const isAddCouponOpen = ref(false)
+
+watch(isAddProductOpen, (isOpen) => {
+  if (!isOpen) {
+    selectedProduct.value = null
+  }
+})
+
+watch(isAddCollectionOpen, (isOpen) => {
+  if (!isOpen) {
+    selectedCollection.value = null
+  }
+})
+
+watch(isAddCouponOpen, (isOpen) => {
+  if (!isOpen) {
+    selectedCoupon.value = null
+  }
+})
 </script>
 
 <template>
@@ -166,7 +221,9 @@ const isAddCouponOpen = ref(false)
               <template #body>
                 <AdminAddProductModal
                   :collections="collections || []"
-                  @success="isAddProductOpen = false; refreshNuxtData()"
+                  :product="selectedProduct"
+                  @success="handleSuccessAction"
+                  @cancel="isAddProductOpen = false"
                 />
               </template>
             </UModal>
@@ -174,6 +231,7 @@ const isAddCouponOpen = ref(false)
           <AdminProductsTable
             :products="products"
             @delete="handleDeleteProduct"
+            @edit="handleEditProduct"
           />
         </div>
       </template>
@@ -202,7 +260,9 @@ const isAddCouponOpen = ref(false)
               />
               <template #body>
                 <AdminAddCollectionModal
-                  @success="isAddCollectionOpen = false; refreshNuxtData()"
+                  :collection="selectedCollection"
+                  @success="handleSuccessCollectionAction"
+                  @cancel="isAddCollectionOpen = false"
                 />
               </template>
             </UModal>
@@ -210,6 +270,7 @@ const isAddCouponOpen = ref(false)
           <AdminCollectionsTable
             :collections="collections"
             @delete="handleDeleteCollection"
+            @edit="handleEditCollection"
           />
         </div>
       </template>
@@ -238,7 +299,9 @@ const isAddCouponOpen = ref(false)
               />
               <template #body>
                 <AdminAddCouponModal
-                  @success="isAddCouponOpen = false; refreshNuxtData()"
+                  :coupon="selectedCoupon"
+                  @success="handleSuccessCouponAction"
+                  @cancel="isAddCouponOpen = false"
                 />
               </template>
             </UModal>
@@ -246,6 +309,7 @@ const isAddCouponOpen = ref(false)
           <AdminDiscountCodesTable
             :coupons="coupons"
             @delete="handleDeleteCoupon"
+            @edit="handleEditCoupon"
           />
         </div>
       </template>

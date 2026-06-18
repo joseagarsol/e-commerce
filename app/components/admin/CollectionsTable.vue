@@ -8,6 +8,7 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'delete', id: string): void
+  (e: 'edit', collection: Collection): void
 }>()
 
 const columns: TableColumn<Collection>[] = [
@@ -45,6 +46,14 @@ const columns: TableColumn<Collection>[] = [
 
     <template #actions-cell="{ row }">
       <div class="flex items-center gap-2">
+        <UButton
+          icon="i-lucide-pencil"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          class="cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+          @click="emit('edit', row.original)"
+        />
         <UButton
           icon="i-lucide-trash"
           color="error"

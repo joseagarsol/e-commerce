@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { Collection } from '~/types/collection'
+
+interface AddCollectionModalProps {
+  collection?: Collection | null
+}
+
+const props = defineProps<AddCollectionModalProps>()
 
 const emit = defineEmits<{
-  (e: 'success'): void
+  (e: 'success' | 'cancel'): void
 }>()
 
 const schema = z.object({
@@ -17,10 +24,38 @@ type Schema = z.output<typeof schema>
 const isSubmitting = ref(false)
 
 const state = reactive<Partial<Schema>>({
-  name: '',
-  description: '',
-  imageUrl: ''
+  name: props.collection?.name || '',
+  description: props.collection?.description || '',
+  imageUrl: props.collection?.imageUrl || ''
 })
+
+watch(() => props.collection, (newCollection) => {
+  state.name = newCollection?.name || ''
+  state.description = newCollection?.description || ''
+  state.imageUrl = newCollection?.imageUrl || ''
+})
+
+const fileToDelete = ref<string | null>(null)
+const newUploadedUrl = ref<string>('')
+
+const onImageUploaded = (newUrls: string | string[]) => {
+  const url = Array.isArray(newUrls) ? newUrls[0] : newUrls
+  if (url) {
+    state.imageUrl = url
+    newUploadedUrl.value = ''
+  }
+}
+
+const removeExistingImage = () => {
+  if (state.imageUrl) {
+    if (props.collection?.imageUrl === state.imageUrl) {
+      const filename = state.imageUrl.substring(state.imageUrl.lastIndexOf('/') + 1)
+      fileToDelete.value = filename
+    }
+
+    state.imageUrl = ''
+  }
+}
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   if (isSubmitting.value) return
@@ -33,17 +68,36 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       imageUrl: event.data.imageUrl
     }
 
-    await $fetch('/api/collections', {
-      method: 'POST',
-      body: payload
-    })
+    if (props.collection) {
+      await $fetch(`/api/collections/${props.collection.id}`, {
+        method: 'PUT',
+        body: payload
+      })
 
-    state.name = ''
-    state.description = ''
-    state.imageUrl = ''
+      if (fileToDelete.value) {
+        await $fetch('/api/upload/delete', {
+          method: 'POST',
+          body: { filename: fileToDelete.value }
+        }).catch(err => console.error('Error al limpiar R2:', err))
+
+        fileToDelete.value = null
+      }
+
+      alert('¡Colección actualizada con éxito!')
+    } else {
+      await $fetch('/api/collections', {
+        method: 'POST',
+        body: payload
+      })
+
+      state.name = ''
+      state.description = ''
+      state.imageUrl = ''
+
+      alert('¡Colección guardada con éxito!')
+    }
 
     emit('success')
-    alert('¡Colección guardada con éxito!')
   } catch (error) {
     console.error('Error al guardar la colección:', error)
     alert('No se pudo guardar la colección en la base de datos')
@@ -88,7 +142,35 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       label="Imagen de la colección"
       name="imageUrl"
     >
-      <AdminImageUploader v-model="state.imageUrl" />
+      <div class="space-y-4 w-full">
+        <!-- Previsualización de la imagen actual si existe -->
+        <div
+          v-if="state.imageUrl"
+          class="relative w-40 h-40 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 group"
+        >
+          <img
+            :src="state.imageUrl"
+            class="w-full h-full object-cover"
+          >
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <UButton
+              icon="i-lucide-trash"
+              color="error"
+              variant="solid"
+              size="sm"
+              class="rounded-full cursor-pointer"
+              @click="removeExistingImage"
+            />
+          </div>
+        </div>
+
+        <!-- Cargador de imágenes (solo se muestra si no hay imagen asignada) -->
+        <AdminImageUploader
+          v-else
+          :model-value="newUploadedUrl"
+          @update:model-value="onImageUploaded"
+        />
+      </div>
     </UFormField>
 
     <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
@@ -97,6 +179,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         color="neutral"
         variant="ghost"
         class="cursor-pointer"
+        @click="emit('cancel')"
       />
       <UButton
         type="submit"

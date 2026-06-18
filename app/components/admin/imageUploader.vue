@@ -134,6 +134,15 @@ watch(singleFile, async (newFile) => {
     isUploading.value = false
   }
 })
+
+watch(modelValue, (newVal) => {
+  if (Array.isArray(newVal) && newVal.length === 0) {
+    filesArray.value = []
+    fileToUrlMap.clear()
+  } else if (typeof newVal === 'string' && newVal === '') {
+    singleFile.value = null
+  }
+})
 </script>
 
 <template>
@@ -145,6 +154,7 @@ watch(singleFile, async (newFile) => {
       color="primary"
       highlight
       layout="list"
+      :file-delete="false"
       multiple
       icon="i-lucide-image"
       label="Deja tus imágenes aquí"
@@ -158,6 +168,7 @@ watch(singleFile, async (newFile) => {
       position="inside"
       color="primary"
       highlight
+      :file-delete="false"
       layout="list"
       icon="i-lucide-image"
       label="Deja tu imagen aquí"
