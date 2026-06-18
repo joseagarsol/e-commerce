@@ -24,6 +24,7 @@ const tabs = [
 ]
 
 const selectedProduct = ref<Product | null>(null)
+const selectedCollection = ref<Collection | null>(null)
 
 const handleDeleteProduct = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar esta prenda de forma permanente?')) return
@@ -56,6 +57,11 @@ const handleDeleteCollection = async (id: string) => {
   }
 }
 
+const handleEditCollection = (collection: Collection) => {
+  isAddCollectionOpen.value = true
+  selectedCollection.value = collection
+}
+
 const handleDeleteCoupon = async (id: string) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este cupón de forma permanente?')) return
   try {
@@ -75,6 +81,12 @@ const handleSuccessAction = () => {
   refreshNuxtData()
 }
 
+const handleSuccessCollectionAction = () => {
+  isAddCollectionOpen.value = false
+  selectedCollection.value = null
+  refreshNuxtData()
+}
+
 const isAddProductOpen = ref(false)
 const isAddCollectionOpen = ref(false)
 const isAddCouponOpen = ref(false)
@@ -82,6 +94,12 @@ const isAddCouponOpen = ref(false)
 watch(isAddProductOpen, (isOpen) => {
   if (!isOpen) {
     selectedProduct.value = null
+  }
+})
+
+watch(isAddCollectionOpen, (isOpen) => {
+  if (!isOpen) {
+    selectedCollection.value = null
   }
 })
 </script>
@@ -224,7 +242,9 @@ watch(isAddProductOpen, (isOpen) => {
               />
               <template #body>
                 <AdminAddCollectionModal
-                  @success="isAddCollectionOpen = false; refreshNuxtData()"
+                  :collection="selectedCollection"
+                  @success="handleSuccessCollectionAction"
+                  @cancel="isAddCollectionOpen = false"
                 />
               </template>
             </UModal>
@@ -232,6 +252,7 @@ watch(isAddProductOpen, (isOpen) => {
           <AdminCollectionsTable
             :collections="collections"
             @delete="handleDeleteCollection"
+            @edit="handleEditCollection"
           />
         </div>
       </template>
