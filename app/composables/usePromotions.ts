@@ -44,14 +44,18 @@ export function usePromotions() {
     discountType: Promotion['discountType'],
     amount: number
   ) => {
+    let discountedPrice = price
     switch (discountType) {
       case 'percent':
-        return price - (price * amount)
+        discountedPrice = price - (price * amount)
+        break
       case 'price':
-        return price - amount
+        discountedPrice = price - amount
+        break
       default:
-        return price
+        discountedPrice = price
     }
+    return Math.max(0, discountedPrice)
   }
 
   return {
