@@ -153,18 +153,21 @@ watch(() => props.product, (newProduct) => {
   hasSizes.value = !!newProduct?.stockBySize
 })
 
+const formRef = useTemplateRef('formRef')
 const filesToDelete = ref<string[]>([])
 const newUploadedUrls = ref<string[]>([])
 
-const onImageUploaded = (newUrls: string | string[]) => {
+const onImageUploaded = async (newUrls: string | string[]) => {
   const urls = Array.isArray(newUrls) ? newUrls : [newUrls]
   if (urls.length > 0) {
     state.images = [...(state.images || []), ...urls]
     newUploadedUrls.value = []
+    await nextTick()
+    formRef.value?.validate({ name: 'images' })
   }
 }
 
-const removeExistingImage = (index: number) => {
+const removeExistingImage = async (index: number) => {
   if (state.images) {
     const imageUrl = state.images[index]
 
@@ -174,12 +177,15 @@ const removeExistingImage = (index: number) => {
     }
 
     state.images.splice(index, 1)
+    await nextTick()
+    formRef.value?.validate({ name: 'images' })
   }
 }
 </script>
 
 <template>
   <UForm
+    ref="formRef"
     :schema="schema(hasSizes)"
     :state="state"
     :validate-on="['change']"
