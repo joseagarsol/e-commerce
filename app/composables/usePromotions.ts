@@ -1,11 +1,13 @@
 import { FetchError } from 'ofetch'
 import type { Promotion } from '~/types/promotion'
 import type { ApiResponse } from '~/types/api'
+import { useCartStore } from '@/stores/cart'
 
 export function usePromotions() {
   const errorPromo = useState<string | null>('errorPromo', () => null)
   const promoCode = useState<string>('promoCode', () => '')
   const promo = useState<Promotion | null>('promo', () => null)
+  const cartStore = useCartStore()
 
   const applyPromotions = async () => {
     if (!promoCode.value.trim()) {
@@ -25,6 +27,12 @@ export function usePromotions() {
 
       if (response.success && response.data) {
         const coupon = response.data
+
+        if (coupon.apply === 'shipping' && cartStore.subtotal >= 25) {
+          errorPromo.value = 'El envío ya es gratuito para este pedido'
+          promo.value = null
+          return
+        }
 
         promo.value = coupon
       }
