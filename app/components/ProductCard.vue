@@ -48,6 +48,10 @@ const isProductSoldOut = () => {
           :src="props.product.images[0] || '/product-tshirt.png'"
           :alt="props.product.name"
           class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          format="webp"
+          quality="80"
+          loading="lazy"
+          sizes="xs:100vw sm:50vw md:33vw lg:25vw"
         />
       </NuxtLink>
       <div class="absolute top-3 left-3">

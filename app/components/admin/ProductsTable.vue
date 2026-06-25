@@ -30,6 +30,11 @@ const columns: TableColumn<Product>[] = [
       <NuxtImg
         :src="row.original.images?.[0] || '/product-tshirt.png'"
         class="w-12 h-12 object-cover rounded-md"
+        width="48"
+        height="48"
+        format="webp"
+        quality="70"
+        loading="lazy"
       />
     </template>
 

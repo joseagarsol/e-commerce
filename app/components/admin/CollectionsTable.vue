@@ -29,6 +29,11 @@ const columns: TableColumn<Collection>[] = [
       <NuxtImg
         :src="row.original.imageUrl || '/collection-cover.png'"
         class="w-12 h-12 object-cover rounded-md"
+        width="48"
+        height="48"
+        format="webp"
+        quality="70"
+        loading="lazy"
       />
     </template>
 
