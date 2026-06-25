@@ -49,17 +49,19 @@ defineProps<{
             :alt="item.title"
             class="w-full h-full object-cover transition-transform duration-700 ease-out"
             loading="lazy"
-          >
-            <!-- Overlay interactivo -->
-            <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 product-overlay">
-              <UButton
-                color="neutral"
-                class="w-full justify-center shadow-xl truncate tracking-widest uppercase text-[10px] transform translate-y-2 opacity-0 transition-all duration-300 ease-out product-button"
-              >
-                Ver detalles
-              </UButton>
-            </div>
-          </nuxtimg>
+            format="webp"
+            quality="80"
+            sizes="xs:100vw sm:50vw md:33vw lg:25vw"
+          />
+          <!-- Overlay interactivo -->
+          <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 product-overlay">
+            <UButton
+              color="neutral"
+              class="w-full justify-center shadow-xl truncate tracking-widest uppercase text-[10px] transform translate-y-2 opacity-0 transition-all duration-300 ease-out product-button"
+            >
+              Ver detalles
+            </UButton>
+          </div>
         </div>
         <div class="text-center md:text-left">
           <p class="text-[10px] uppercase tracking-widest text-neutral-500 mb-1">

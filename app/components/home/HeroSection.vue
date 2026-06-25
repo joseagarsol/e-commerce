@@ -4,13 +4,14 @@
     <!-- Fondo: Imagen con Overlay para legibilidad -->
     <div class="absolute inset-0 z-0 bg-zinc-950">
       <NuxtImg
-        src="LandingImg_V2.jpg"
+        src="/LandingImg_V2.jpg"
         alt="Urban Luxury Hero"
         class="w-full h-full object-cover object-[center_top]"
         placeholder
         loading="eager"
+        preload
         format="webp"
-        quality="100"
+        quality="80"
       />
       <!-- Overlay direccional para destacar el texto a la izquierda -->
       <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
