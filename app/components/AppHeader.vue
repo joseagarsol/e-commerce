@@ -3,6 +3,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import { useCartStore } from '@/stores/cart'
 
 const cartStore = useCartStore()
+const colorMode = useColorMode()
 
 const items = ref<NavigationMenuItem[][]> ([
   [
@@ -32,6 +33,15 @@ const items = ref<NavigationMenuItem[][]> ([
 ]
 )
 const cartCount = computed(() => cartStore.products.length)
+
+const isDark = computed({
+  get() {
+    return colorMode.value === 'dark'
+  },
+  set(value) {
+    colorMode.preference = value ? 'dark' : 'light'
+  }
+})
 </script>
 
 <template>
@@ -50,6 +60,18 @@ const cartCount = computed(() => cartStore.products.length)
       class="hidden lg:flex tracking-wide hover:text-primary"
     />
     <template #right>
+      <UButton
+        color="primary"
+        variant="ghost"
+        class="group"
+        :aria-label="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        @click="isDark = !isDark"
+      >
+        <UIcon
+          :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
+          class="size-5 transition-transform group-hover:scale-110 group-active:scale-90 "
+        />
+      </UButton>
       <UPopover :content="{ align: 'end', side: 'bottom', sideOffset: 12 }">
         <UButton
           color="primary"
