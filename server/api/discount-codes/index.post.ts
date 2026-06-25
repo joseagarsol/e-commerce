@@ -38,17 +38,22 @@ export default defineEventHandler(async (event) => {
     }
 
     const couponId = crypto.randomUUID()
+    const dbInput = mapDTOToDB(validatedData)
 
     const [newCoupon] = await db.insert(discountCodes).values({
       id: couponId,
-      code: validatedData.code,
-      discountType: validatedData.discountType,
-      apply: validatedData.apply,
-      discount: validatedData.discount
+      ...dbInput
     }).returning()
 
+    if (!newCoupon) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Error al crear el cupón de descuento'
+      })
+    }
+
     setResponseStatus(event, 201)
-    return newCoupon
+    return mapDiscountToDTO(newCoupon)
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)
