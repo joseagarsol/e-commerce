@@ -4,7 +4,8 @@ import { discountCodes } from '../../db/schema'
 export default defineEventHandler(async () => {
   try {
     const allCoupons = await db.select().from(discountCodes)
-    return allCoupons
+
+    return allCoupons.map(mapDiscountToDTO)
   } catch {
     throw createError({
       statusCode: 500,

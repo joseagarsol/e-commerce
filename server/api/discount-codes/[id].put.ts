@@ -35,7 +35,6 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validatedData = discountCodeSchema.parse(body)
 
-    // Verificar si el código ya está en uso por otro cupón diferente
     const [existingCode] = await db.select()
       .from(discountCodes)
       .where(and(
@@ -51,12 +50,11 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    const dbInput = mapDTOToDB(validatedData)
+
     const [updatedCoupon] = await db.update(discountCodes)
       .set({
-        code: validatedData.code,
-        discountType: validatedData.discountType,
-        apply: validatedData.apply,
-        discount: validatedData.discount
+        ...dbInput
       })
       .where(eq(discountCodes.id, idParam))
       .returning()
@@ -71,7 +69,7 @@ export default defineEventHandler(async (event) => {
     return {
       success: true,
       message: 'Cupón actualizado correctamente',
-      updatedCoupon
+      updatedCoupon: mapDiscountToDTO(updatedCoupon)
     }
   } catch (error) {
     if (error instanceof z.ZodError) {

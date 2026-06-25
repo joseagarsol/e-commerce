@@ -218,10 +218,16 @@ watch(() => state.country, () => {
 })
 
 const getDiscountedShipping = (price: number) => {
-  if (promo.value?.apply === 'shipping') {
-    return getDiscountedPrice(price, promo.value.discountType, promo.value.discount)
+  let shippingPrice = price
+
+  if (cartStore.subtotal >= 25) {
+    shippingPrice = Math.max(0, shippingPrice - 3.99)
   }
-  return price
+
+  if (promo.value?.apply === 'shipping') {
+    return getDiscountedPrice(shippingPrice, promo.value.discountType, promo.value.discount)
+  }
+  return shippingPrice
 }
 
 const finalPrice = computed(() => {
@@ -419,6 +425,13 @@ const onSubmit = (event: FormSubmitEvent<Schema>) => {
                 <USeparator
                   label="Método de envío"
                   icon="i-lucide-truck"
+                />
+                <UAlert
+                  v-if="cartStore.subtotal >= 25"
+                  variant="soft"
+                  color="success"
+                  icon="i-lucide-party-popper"
+                  title="¡Envío gratuito estándar aplicado por superar los 25€ de compra! (o 3,99€ de descuento en Envío Express)"
                 />
                 <URadioGroup
                   v-model="state.shippingPrice"
