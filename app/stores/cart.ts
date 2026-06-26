@@ -220,6 +220,10 @@ export const useCartStore = defineStore('cart', () => {
     products.value = products.value.filter(p => !(p.id === id && p.selectedSize === size))
   }
 
+  const clearCart = () => {
+    products.value = []
+  }
+
   return {
     products,
     subtotal,
@@ -228,6 +232,7 @@ export const useCartStore = defineStore('cart', () => {
     addProduct,
     removeProduct,
     getItemQuantity,
-    removeProductFromCart
+    removeProductFromCart,
+    clearCart
   }
 })
