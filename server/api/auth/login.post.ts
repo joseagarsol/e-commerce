@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { db } from '../../db'
 import { users } from '../../db/schema'
 import { eq } from 'drizzle-orm'
-import { verifyPassword } from '../../utils/auth'
+import { verifyPassword, hashPassword } from '../../utils/auth'
+import { randomUUID } from 'node:crypto'
 
 const schema = z.object({
   email: z.email('Correo inválido'),
@@ -15,6 +16,31 @@ export default defineEventHandler(async (event) => {
     const validatedData = schema.parse(body)
     const { email, password } = validatedData
     const normalizedEmail = email.toLowerCase()
+
+    const demoAccounts = {
+      'admin@urbanluxury.com': { name: 'Administrador Demo', role: 'admin' as const },
+      'cliente@urbanluxury.com': { name: 'Cliente Demo', role: 'customer' as const }
+    }
+
+    if (normalizedEmail in demoAccounts) {
+      const [existingUser] = await db.select()
+        .from(users)
+        .where(eq(users.email, normalizedEmail))
+        .limit(1)
+
+      if (!existingUser) {
+        const accountInfo = demoAccounts[normalizedEmail as keyof typeof demoAccounts]
+        const hashedPassword = hashPassword(password)
+
+        await db.insert(users).values({
+          id: randomUUID(),
+          name: accountInfo.name,
+          email: normalizedEmail,
+          passwordHash: hashedPassword,
+          role: accountInfo.role
+        })
+      }
+    }
 
     const [user] = await db.select()
       .from(users)
