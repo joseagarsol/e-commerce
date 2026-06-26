@@ -52,6 +52,44 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     isSubmit.value = false
   }
 }
+
+async function loginAs(email: string, pass: string) {
+  isSubmit.value = true
+  toast.clear()
+
+  try {
+    state.email = email
+    state.password = pass
+
+    await authStore.login({ email, password: pass })
+
+    toast.add({
+      title: 'Acceso Demo Exitoso',
+      description: `Has iniciado sesión como ${email.includes('admin') ? 'Administrador' : 'Cliente'}`,
+      color: 'success'
+    })
+
+    if (email.includes('admin')) {
+      await navigateTo('/admin')
+    } else {
+      await navigateTo('/')
+    }
+  } catch (error) {
+    let description = 'No se pudo iniciar sesión en modo demo.'
+    if (error instanceof FetchError && error.data?.statusMessage) {
+      description = error.data.statusMessage
+    }
+
+    toast.add({
+      title: 'Error de acceso demo',
+      description,
+      color: 'error',
+      duration: 0
+    })
+  } finally {
+    isSubmit.value = false
+  }
+}
 </script>
 
 <template>
@@ -136,6 +174,46 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             :loading="isSubmit"
           />
         </UForm>
+
+        <div class="relative my-6">
+          <div
+            class="absolute inset-0 flex items-center"
+            aria-hidden="true"
+          >
+            <div class="w-full border-t border-zinc-200 dark:border-zinc-800" />
+          </div>
+          <div class="relative flex justify-center text-xs uppercase">
+            <span class="bg-white dark:bg-zinc-900 px-2 text-zinc-500 font-medium">
+              Acceso Rápido Demo
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <UButton
+            color="neutral"
+            variant="subtle"
+            icon="i-lucide-shield-check"
+            label="Admin Demo"
+            size="md"
+            block
+            class="cursor-pointer"
+            :disabled="isSubmit"
+            @click="loginAs('admin@urbanluxury.com', 'admin12345')"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            icon="i-lucide-user"
+            label="Cliente Demo"
+            size="md"
+            block
+            class="cursor-pointer"
+            :disabled="isSubmit"
+            @click="loginAs('cliente@urbanluxury.com', 'cliente12345')"
+          />
+        </div>
+
         <template #footer>
           <p class="text-center text-sm text-gray-600 dark:text-gray-400">
             ¿Aún no estás registrado?
