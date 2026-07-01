@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
         id: users.id,
         name: users.name,
         email: users.email,
-        role: users.role
+        role: users.role,
+        createdAt: users.createdAt
       })
       .from(users)
       .where(eq(users.id, session.data.userId))

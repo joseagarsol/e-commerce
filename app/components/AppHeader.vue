@@ -23,7 +23,7 @@ const items = ref<NavigationMenuItem[][]> ([
   [
     {
       label: 'Mi cuenta',
-      to: '/account'
+      to: '/profile'
     },
     {
       label: 'Seguimiento de pedidos',
@@ -65,7 +65,7 @@ const isDark = computed({
         variant="ghost"
         class="group"
         :aria-label="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-        @click="isDark = !isDark"
+        @click="() => { isDark = !isDark }"
       >
         <UIcon
           :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
