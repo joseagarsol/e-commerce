@@ -18,7 +18,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
         Consulta el estado y los detalles de tus últimas compras.
       </p>
     </div>
-    <!-- Skeletons durante la carga -->
     <div
       v-if="pending"
       class="space-y-6"
@@ -37,7 +36,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
         </div>
       </UCard>
     </div>
-    <!-- Error de carga -->
     <div
       v-else-if="error"
       class="text-center py-10"
@@ -46,7 +44,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
         Hubo un problema al cargar tus pedidos. Por favor, inténtalo de nuevo.
       </p>
     </div>
-    <!-- Lista vacía de pedidos -->
     <div
       v-else-if="!orders || orders.length === 0"
       class="text-center py-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl space-y-4"
@@ -101,7 +98,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
             </UBadge>
           </div>
         </template>
-        <!-- Detalle de productos comprados -->
         <div class="space-y-4 py-2">
           <div class="text-sm font-semibold text-zinc-400 uppercase tracking-widest pb-3 border-b border-zinc-100 dark:border-zinc-800">
             Productos
@@ -140,8 +136,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
                   loading="lazy"
                 />
               </div>
-
-              <!-- Detalles del producto -->
               <div class="flex-1 min-w-0 flex flex-col justify-between">
                 <div>
                   <NuxtLink
@@ -174,8 +168,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
                   </span>
                 </div>
               </div>
-
-              <!-- Precio -->
               <div class="text-right flex flex-col justify-center pl-2 flex-shrink-0">
                 <p class="text-zinc-950 dark:text-white font-semibold text-sm sm:text-base">
                   {{ formatCurrency(item.price * item.quantity) }}
@@ -187,8 +179,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
                   {{ item.quantity }} x {{ formatCurrency(item.price) }}
                 </p>
               </div>
-
-              <!-- Línea divisoria absoluta con sangría de imagen -->
               <div
                 v-if="index < order.items.length - 1"
                 class="absolute bottom-0 right-0 left-20 sm:left-24 border-b border-dashed border-zinc-200/60 dark:divide-zinc-800/60"
