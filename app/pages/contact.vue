@@ -9,7 +9,7 @@ useSeoMeta({
 
 const schema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  email: z.string().email('Dirección de correo inválida'),
+  email: z.email('Dirección de correo inválida'),
   message: z.string().min(10, 'El mensaje debe detallarse más (mínimo 10 caracteres)')
 })
 
