@@ -53,7 +53,7 @@ const authStore = useAuthStore()
 
       <div class="flex flex-col gap-1">
         <UButton
-          to="/user/profile"
+          to="/profile"
           variant="ghost"
           color="neutral"
           block
