@@ -10,7 +10,7 @@ const props = defineProps<Props>()
 const toast = useToast()
 const route = useRoute()
 const cartStore = useCartStore()
-const targetLink = computed(() => `/collections/${route.params.collection}/${props.product.id}`)
+const targetLink = computed(() => `/collections/${route.params.collection || props.product.collectionId || 'all'}/${props.product.id}`)
 
 const handleAddToCart = (size: Size | null = null) => {
   const cartItem: CartItem = {

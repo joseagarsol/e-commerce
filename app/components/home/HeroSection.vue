@@ -4,7 +4,7 @@
     <!-- Fondo: Imagen con Overlay para legibilidad -->
     <div class="absolute inset-0 z-0 bg-zinc-950">
       <NuxtImg
-        src="/LandingImg_V2.jpg"
+        src="/LandingImg_SpringSummer.jpg"
         alt="Urban Luxury Hero"
         class="w-full h-full object-cover object-[center_top]"
         placeholder
@@ -22,7 +22,7 @@
     <div class="relative h-full flex flex-col items-center justify-center text-white dark:text-white px-4 text-center container mx-auto">
       <!-- Temporada -->
       <p class="text-xs md:text-sm font-light tracking-[0.8em] uppercase mb-6 animate-fade-in opacity-0">
-        Otoño Invierno 2026
+        Primavera Verano 2026
       </p>
 
       <!-- Título Principal -->
@@ -36,7 +36,7 @@
         <UButton
           size="xl"
           label="Ver Colección"
-          to="/collections/otono-invierno-2025"
+          to="/collections/spring-summer"
           color="primary"
           class="px-10 py-4 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 text-white"
         />
@@ -70,7 +70,7 @@
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75" />
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500" />
               </span>
-              <span class="uppercase">Nueva colección FW26 disponible</span>
+              <span class="uppercase">Nueva colección SS26 disponible</span>
             </div>
             <div class="flex items-center gap-3 text-white/70 hover:text-white transition-colors cursor-default">
               <UIcon

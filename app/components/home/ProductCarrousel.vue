@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import type { Product } from '~/types/product'
+
 defineProps<{
-  items: Array<{
-    id: number
-    title: string
-    category: string
-    price: string
-    image: string
-  }>
+  items: Product[]
 }>()
+
+const formatCollectionId = (id?: string) => {
+  if (!id) return ''
+  return id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
+
+const handleNavigate = (item: Product) => {
+  navigateTo(`/collections/${item.collectionId || 'all'}/${item.id}`)
+}
 </script>
 
 <template>
@@ -18,12 +23,10 @@ defineProps<{
         <h2 class="font-serif italic font-light text-4xl md:text-5xl text-zinc-900 dark:text-white leading-tight">
           Nuestras Novedades
         </h2>
-        <p class="font-sans font-light text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 mt-1">
-          Curated collection · Otoño Invierno 2026
-        </p>
       </div>
       <div class="flex items-end">
         <UButton
+          to="/collections"
           color="primary"
           variant="link"
           size="sm"
@@ -42,11 +45,14 @@ defineProps<{
       :ui="{ item: 'basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4 pt-8' }"
       class="mt-6 -mx-2"
     >
-      <div class="mx-2 flex flex-col cursor-pointer product-card group">
+      <div
+        class="mx-2 flex flex-col cursor-pointer product-card group"
+        @click="handleNavigate(item)"
+      >
         <div class="relative overflow-hidden rounded-lg aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 mb-4">
           <NuxtImg
-            :src="item.image"
-            :alt="item.title"
+            :src="item.images[0] || '/product-tshirt.png'"
+            :alt="item.name"
             class="w-full h-full object-cover transition-transform duration-700 ease-out"
             loading="lazy"
             format="webp"
@@ -65,13 +71,13 @@ defineProps<{
         </div>
         <div class="text-center md:text-left">
           <p class="text-[10px] uppercase tracking-widest text-neutral-500 mb-1">
-            {{ item.category }}
+            {{ formatCollectionId(item.collectionId) }}
           </p>
           <h3 class="text-sm font-medium tracking-wide dark:text-white mb-1">
-            {{ item.title }}
+            {{ item.name }}
           </h3>
           <p class="text-sm font-light text-primary">
-            {{ item.price }}
+            {{ formatCurrency(item.price) }}
           </p>
         </div>
       </div>
