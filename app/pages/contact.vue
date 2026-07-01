@@ -24,19 +24,19 @@ const state = reactive({
 const isSending = ref(false)
 const toast = useToast()
 
-const onSubmit = async (event: FormSubmitEvent<Schema>) => {
+const onSubmit = async (__event: FormSubmitEvent<Schema>) => {
   isSending.value = true
-  
+
   // Simulamos el envío del formulario de contacto
   setTimeout(() => {
     isSending.value = false
-    
+
     toast.add({
       title: 'Mensaje enviado',
       description: 'Gracias por ponerte en contacto. Te responderemos en un plazo de 24 horas.',
       color: 'success'
     })
-    
+
     state.name = ''
     state.email = ''
     state.message = ''
