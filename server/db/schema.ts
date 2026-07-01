@@ -37,3 +37,30 @@ export const users = sqliteTable('users', {
     .notNull().default('customer'),
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`)
 })
+
+export const orders = sqliteTable('orders', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').references(() => users.id).notNull(),
+  email: text('email').notNull(),
+  name: text('name').notNull(),
+  lastName: text('last_name').notNull(),
+  address: text('address').notNull(),
+  postalCode: text('postal_code').notNull(),
+  city: text('city').notNull(),
+  province: text('province').notNull(),
+  shippingMethod: text('shipping_method').notNull(),
+  shippingPrice: real('shipping_price').notNull(),
+  paymentMethod: text('payment_method').notNull(),
+  status: text('status', { enum: ['pending', 'paid', 'shipped', 'cancelled'] }).notNull().default('paid'),
+  total: real('total').notNull(),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`)
+})
+
+export const orderItems = sqliteTable('order_items', {
+  id: text('id').primaryKey(),
+  orderId: text('order_id').references(() => orders.id).notNull(),
+  productId: text('product_id').references(() => products.id).notNull(),
+  quantity: integer('quantity').notNull(),
+  size: text('size'),
+  price: real('price').notNull()
+})

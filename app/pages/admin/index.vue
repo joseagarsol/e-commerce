@@ -2,6 +2,7 @@
 import type { Product } from '~/types/product'
 import type { Collection } from '~/types/collection'
 import type { Promotion } from '~/types/promotion'
+import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
 
 definePageMeta({
   middleware: 'admin'
@@ -10,17 +11,20 @@ definePageMeta({
 const [
   { data: products },
   { data: collections },
-  { data: coupons }
+  { data: coupons },
+  { data: orders }
 ] = await Promise.all([
   useFetch<Product[]>('/api/products'),
   useFetch<Collection[]>('/api/collections'),
-  useFetch<Promotion[]>('/api/discount-codes')
+  useFetch<Promotion[]>('/api/discount-codes'),
+  useFetch<OrderResponseDTO[]>('/api/orders')
 ])
 
 const tabs = [
   { label: 'Prendas', icon: 'i-lucide-shirt', slot: 'products' },
   { label: 'Colecciones', icon: 'i-lucide-folder-open', slot: 'collections' },
-  { label: 'Cupones de Descuento', icon: 'i-lucide-tag', slot: 'coupons' }
+  { label: 'Cupones de Descuento', icon: 'i-lucide-tag', slot: 'coupons' },
+  { label: 'Pedidos', icon: 'i-lucide-shopping-cart', slot: 'orders' }
 ]
 
 const selectedProduct = ref<Product | null>(null)
@@ -97,6 +101,20 @@ const handleSuccessCouponAction = () => {
   isAddCouponOpen.value = false
   selectedCoupon.value = null
   refreshNuxtData()
+}
+
+const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
+  try {
+    await $fetch(`/api/orders/${id}/status`, {
+      method: 'PUT',
+      body: { status: newStatus }
+    })
+    await refreshNuxtData()
+    alert('Estado del pedido actualizado correctamente.')
+  } catch (error) {
+    console.error('Error updating order status:', error)
+    alert('No se pudo actualizar el estado del pedido')
+  }
 }
 
 const isAddProductOpen = ref(false)
@@ -216,7 +234,7 @@ watch(isAddCouponOpen, (isOpen) => {
                 icon="i-lucide-plus"
                 size="md"
                 class="cursor-pointer"
-                @click="isAddProductOpen = true"
+                @click="() => { isAddProductOpen = true }"
               />
               <template #body>
                 <AdminAddProductModal
@@ -256,7 +274,7 @@ watch(isAddCouponOpen, (isOpen) => {
                 icon="i-lucide-plus"
                 size="md"
                 class="cursor-pointer"
-                @click="isAddCollectionOpen = true"
+                @click="() => { isAddCollectionOpen = true }"
               />
               <template #body>
                 <AdminAddCollectionModal
@@ -295,7 +313,7 @@ watch(isAddCouponOpen, (isOpen) => {
                 icon="i-lucide-plus"
                 size="md"
                 class="cursor-pointer"
-                @click="isAddCouponOpen = true"
+                @click="() => { isAddCouponOpen = true }"
               />
               <template #body>
                 <AdminAddCouponModal
@@ -310,6 +328,14 @@ watch(isAddCouponOpen, (isOpen) => {
             :coupons="coupons"
             @delete="handleDeleteCoupon"
             @edit="handleEditCoupon"
+          />
+        </div>
+      </template>
+      <template #orders>
+        <div class="py-6 space-y-6">
+          <AdminOrdersTable
+            :orders="orders"
+            @update-status="handleUpdateOrderStatus"
           />
         </div>
       </template>

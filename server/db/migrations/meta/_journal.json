@@ -36,6 +36,20 @@
       "when": 1781089147833,
       "tag": "0004_steep_wrecker",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1782464639209,
+      "tag": "0005_secret_talos",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1782464655054,
+      "tag": "0006_certain_leech",
+      "breakpoints": true
     }
   ]
 }

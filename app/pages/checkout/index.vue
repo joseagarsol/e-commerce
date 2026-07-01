@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import * as z from 'zod'
 import type { RadioGroupItem, FormSubmitEvent } from '@nuxt/ui'
+import type { CreateOrderInputDTO } from '~~/server/dtos/order.dto'
 
 definePageMeta({
   middleware: 'auth'
@@ -241,8 +242,76 @@ const finalPrice = computed(() => {
   return total
 })
 
-const onSubmit = (event: FormSubmitEvent<Schema>) => {
-  console.log(event.data)
+const isSubmitting = ref(false)
+
+const onSubmit = async (event: FormSubmitEvent<Schema>) => {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
+
+  try {
+    const payload: CreateOrderInputDTO = {
+      billingAddress: {
+        email: event.data.email,
+        name: event.data.name,
+        lastName: event.data.lastName,
+        address: event.data.address,
+        postalCode: event.data.postalCode,
+        city: event.data.city,
+        province: event.data.province
+      },
+      shipping: {
+        method: state.shippingPrice === 0 ? 'pickup' : state.shippingPrice === 9.99 ? 'express' : 'standard',
+        price: getDiscountedShipping(state.shippingPrice || 0)
+      },
+      payment: {
+        method: state.paymentMethod || 'credit-card'
+      },
+      cartItems: cartStore.products.map(item => ({
+        id: item.id,
+        price: item.price,
+        quantity: item.quantity,
+        selectedSize: item.selectedSize
+      })),
+      totalPrice: finalPrice.value
+    }
+
+    const response = await $fetch('/api/orders', {
+      method: 'POST',
+      body: payload
+    })
+
+    state.email = undefined
+    state.country = undefined
+    state.name = undefined
+    state.lastName = undefined
+    state.company = undefined
+    state.address = undefined
+    state.address2 = undefined
+    state.postalCode = undefined
+    state.city = undefined
+    state.province = undefined
+    state.teléfono = undefined
+    state.shippingPrice = 3.99
+    state.paymentMethod = 'credit-card'
+    state.cardNumber = undefined
+    state.cardExpiry = undefined
+    state.cardCvc = undefined
+    state.cardName = undefined
+
+    cartStore.clearCart()
+
+    if (response.success) {
+      await navigateTo({
+        path: '/checkout/success',
+        query: { orderId: response.orderId }
+      })
+    }
+  } catch (error) {
+    console.error('Error al guardar el pedido:', error)
+    alert('No se pudo guardar el pedido en la base de datos')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
