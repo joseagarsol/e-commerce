@@ -34,6 +34,9 @@ export interface OrderItemDTO {
   quantity: number
   size: string | null
   price: number
+  productName?: string
+  productImage?: string
+  collectionId?: string | null
 }
 
 export interface OrderResponseDTO {
@@ -60,7 +63,14 @@ export interface OrderResponseDTO {
   items: OrderItemDTO[]
 }
 
-export function mapOrderToDTO(order: OrderEntity, items: OrderItemEntity[] = []): OrderResponseDTO {
+export function mapOrderToDTO(
+  order: OrderEntity,
+  items: (OrderItemEntity & {
+    productName?: string | null
+    productImages?: string[] | null
+    collectionId?: string | null
+  })[] = []
+): OrderResponseDTO {
   return {
     id: order.id,
     createdAt: order.createdAt,
@@ -86,7 +96,12 @@ export function mapOrderToDTO(order: OrderEntity, items: OrderItemEntity[] = [])
       productId: item.productId,
       quantity: item.quantity,
       size: item.size,
-      price: item.price
+      price: item.price,
+      productName: item.productName ?? undefined,
+      productImage: item.productImages && Array.isArray(item.productImages) && item.productImages.length > 0
+        ? item.productImages[0]
+        : undefined,
+      collectionId: item.collectionId ?? undefined
     }))
   }
 }

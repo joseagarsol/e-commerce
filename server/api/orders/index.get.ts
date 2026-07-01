@@ -1,5 +1,5 @@
 import { db } from '../../db'
-import { orders, users, orderItems } from '../../db/schema'
+import { orders, users, orderItems, products } from '../../db/schema'
 import { eq, desc, inArray } from 'drizzle-orm'
 import { mapOrderToDTO } from '~~/server/dtos/order.dto'
 
@@ -45,8 +45,19 @@ export default defineEventHandler(async (event) => {
     }
 
     const orderIds = dbOrders.map(o => o.id)
-    const dbItems = await db.select()
+    const dbItems = await db.select({
+      id: orderItems.id,
+      orderId: orderItems.orderId,
+      productId: orderItems.productId,
+      quantity: orderItems.quantity,
+      size: orderItems.size,
+      price: orderItems.price,
+      productName: products.name,
+      productImages: products.images,
+      collectionId: products.collectionId
+    })
       .from(orderItems)
+      .leftJoin(products, eq(orderItems.productId, products.id))
       .where(inArray(orderItems.orderId, orderIds))
 
     return dbOrders.map((order) => {

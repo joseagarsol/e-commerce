@@ -69,7 +69,7 @@ const authStore = useAuthStore()
         </UButton>
 
         <UButton
-          to="/user/orders"
+          to="/orders"
           variant="ghost"
           color="neutral"
           block
