@@ -8,7 +8,7 @@ const { data: collections, error } = await useFetch<Collection[]>('/api/collecti
   <section class="py-12 px-5 md:py-16 md:px-12">
     <UContainer>
       <h2 class="font-serif italic font-light text-4xl md:text-5xl text-zinc-900 dark:text-white leading-tight">
-        Colecciones PRUEBA CI
+        Colecciones
       </h2>
 
       <div
