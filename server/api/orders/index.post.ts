@@ -91,9 +91,24 @@ export default defineEventHandler(async (event) => {
           if (item.selectedSize && updatedStockBySize) {
             const currentSizeStock = updatedStockBySize[item.selectedSize] ?? 0
 
-            updatedStockBySize[item.selectedSize] = Math.max(0, currentSizeStock - item.quantity)
+            if (currentSizeStock < item.quantity) {
+              throw createError({
+                statusCode: 400,
+                statusMessage: `Stock insuficiente para la prenda "${product.name}" en talla ${item.selectedSize}. Disponible: ${currentSizeStock}, Solicitado: ${item.quantity}`
+              })
+            }
+
+            updatedStockBySize[item.selectedSize] = currentSizeStock - item.quantity
+          } else {
+            if (product.stock < item.quantity) {
+              throw createError({
+                statusCode: 400,
+                statusMessage: `Stock insuficiente para la prenda "${product.name}". Disponible: ${product.stock}, Solicitado: ${item.quantity}`
+              })
+            }
           }
-          const newTotalStock = Math.max(0, product.stock - item.quantity)
+
+          const newTotalStock = product.stock - item.quantity
 
           await tx.update(products)
             .set({
