@@ -8,17 +8,20 @@ definePageMeta({
   middleware: 'admin'
 })
 
-const [
-  { data: products },
-  { data: collections },
-  { data: coupons },
-  { data: orders }
-] = await Promise.all([
-  useFetch<Product[]>('/api/products'),
-  useFetch<Collection[]>('/api/collections'),
-  useFetch<Promotion[]>('/api/discount-codes'),
-  useFetch<OrderResponseDTO[]>('/api/orders')
-])
+const { data: adminData, refresh } = await useAsyncData('admin-dashboard', async () => {
+  const [products, collections, coupons, orders] = await Promise.all([
+    $fetch<Product[]>('/api/products'),
+    $fetch<Collection[]>('/api/collections'),
+    $fetch<Promotion[]>('/api/discount-codes'),
+    $fetch<OrderResponseDTO[]>('/api/orders')
+  ])
+  return { products, collections, coupons, orders }
+})
+
+const products = computed(() => adminData.value?.products ?? [])
+const collections = computed(() => adminData.value?.collections ?? [])
+const coupons = computed(() => adminData.value?.coupons ?? [])
+const orders = computed(() => adminData.value?.orders ?? [])
 
 const tabs = [
   { label: 'Prendas', icon: 'i-lucide-shirt', slot: 'products' },
@@ -37,7 +40,7 @@ const handleDeleteProduct = async (id: string) => {
     await $fetch(`/api/products/${id}`, {
       method: 'DELETE'
     })
-    await refreshNuxtData()
+    await refresh()
   } catch (error) {
     console.error('Error deleting product:', error)
     alert('No se pudo eliminar el producto de la base de datos')
@@ -55,7 +58,7 @@ const handleDeleteCollection = async (id: string) => {
     await $fetch(`/api/collections/${id}`, {
       method: 'DELETE'
     })
-    await refreshNuxtData()
+    await refresh()
   } catch (error) {
     console.error('Error deleting collection:', error)
     alert('No se pudo eliminar la colección de la base de datos')
@@ -78,7 +81,7 @@ const handleDeleteCoupon = async (id: string) => {
     await $fetch(`/api/discount-codes/${id}`, {
       method: 'DELETE'
     })
-    await refreshNuxtData()
+    await refresh()
   } catch (error) {
     console.error('Error deleting coupon:', error)
     alert('No se pudo eliminar el cupón de la base de datos')
@@ -88,19 +91,19 @@ const handleDeleteCoupon = async (id: string) => {
 const handleSuccessAction = () => {
   isAddProductOpen.value = false
   selectedProduct.value = null
-  refreshNuxtData()
+  refresh()
 }
 
 const handleSuccessCollectionAction = () => {
   isAddCollectionOpen.value = false
   selectedCollection.value = null
-  refreshNuxtData()
+  refresh()
 }
 
 const handleSuccessCouponAction = () => {
   isAddCouponOpen.value = false
   selectedCoupon.value = null
-  refreshNuxtData()
+  refresh()
 }
 
 const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
@@ -109,7 +112,7 @@ const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
       method: 'PUT',
       body: { status: newStatus }
     })
-    await refreshNuxtData()
+    await refresh()
     alert('Estado del pedido actualizado correctamente.')
   } catch (error) {
     console.error('Error updating order status:', error)
