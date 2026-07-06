@@ -60,7 +60,7 @@ const isDisabledAddButton = (product: CartItem) => {
         <NuxtImg
           :src="product.images?.[0] || '/product-tshirt.png'"
           :alt="product.name"
-          class="w-22 object-contain rounded-md shadow-md"
+          class="aspect-4/5 w-22 object-cover rounded-md shadow-md"
         />
         <div class="flex flex-col">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white leading-tight">
