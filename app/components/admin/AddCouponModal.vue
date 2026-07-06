@@ -14,6 +14,7 @@ const emit = defineEmits<{
 }>()
 
 const isSubmitting = ref(false)
+const toast = useToast()
 
 const schema = z.object({
   code: z.string()
@@ -95,7 +96,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         method: 'PUT',
         body: payload
       })
-      alert('¡Cupón actualizado con éxito!')
+      toast.add({
+        title: 'Cupón actualizado',
+        description: '¡Cupón actualizado con éxito!',
+        color: 'success'
+      })
     } else {
       await $fetch('/api/discount-codes', {
         method: 'POST',
@@ -105,13 +110,21 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       state.discountType = 'percent'
       state.apply = 'cartPrice'
       state.discount = undefined
-      alert('¡Cupón creado con éxito!')
+      toast.add({
+        title: 'Cupón creado',
+        description: '¡Cupón creado con éxito!',
+        color: 'success'
+      })
     }
 
     emit('success')
   } catch (error) {
     console.error('Error al guardar el cupón:', error)
-    alert('No se pudo guardar el cupón en la base de datos')
+    toast.add({
+      title: 'Error al guardar',
+      description: 'No se pudo guardar el cupón en la base de datos',
+      color: 'error'
+    })
   } finally {
     isSubmitting.value = false
   }

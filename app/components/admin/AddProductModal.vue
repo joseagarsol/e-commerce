@@ -17,6 +17,7 @@ const emit = defineEmits<{
 
 const isSubmitting = ref(false)
 const hasSizes = ref(!!props.product?.stockBySize)
+const toast = useToast()
 
 const stockBySizeSchema = z.record(
   z.string(),
@@ -114,7 +115,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         filesToDelete.value = []
       }
 
-      alert('¡Prenda actualizada con éxito!')
+      toast.add({
+        title: 'Prenda actualizada',
+        description: '¡Prenda actualizada con éxito!',
+        color: 'success'
+      })
     } else {
       await $fetch('/api/products', {
         method: 'POST',
@@ -130,13 +135,21 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       state.stockBySize = null
       hasSizes.value = false
 
-      alert('¡Prenda guardada con éxito!')
+      toast.add({
+        title: 'Prenda guardada',
+        description: '¡Prenda guardada con éxito!',
+        color: 'success'
+      })
     }
 
     emit('success')
   } catch (error) {
     console.error('Error al guardar el producto:', error)
-    alert('No se pudo guardar la prenda en la base de datos')
+    toast.add({
+      title: 'Error al guardar',
+      description: 'No se pudo guardar la prenda en la base de datos',
+      color: 'error'
+    })
   } finally {
     isSubmitting.value = false
   }
