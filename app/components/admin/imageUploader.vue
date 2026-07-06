@@ -63,13 +63,17 @@ watch(filesArray, async (newFiles, oldFiles = []) => {
         }
       })
 
-      await fetch(response.uploadUrl, {
+      const uploadRes = await fetch(response.uploadUrl, {
         method: 'PUT',
         body: file,
         headers: {
           'Content-Type': file.type
         }
       })
+
+      if (!uploadRes.ok) {
+        throw new Error(`Error al subir el archivo ${file.name} al almacenamiento (HTTP ${uploadRes.status})`)
+      }
 
       fileToUrlMap.set(file, response.fileUrl)
     })
@@ -114,13 +118,17 @@ watch(singleFile, async (newFile) => {
       }
     })
 
-    await fetch(response.uploadUrl, {
+    const uploadRes = await fetch(response.uploadUrl, {
       method: 'PUT',
       body: newFile,
       headers: {
         'Content-Type': newFile.type
       }
     })
+
+    if (!uploadRes.ok) {
+      throw new Error(`Error al subir la imagen al almacenamiento (HTTP ${uploadRes.status})`)
+    }
 
     modelValue.value = response.fileUrl
   } catch (error) {
