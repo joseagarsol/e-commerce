@@ -1,5 +1,8 @@
 import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto'
 import type { H3Event } from 'h3'
+import { db } from '../db'
+import { users } from '../db/schema'
+import { eq } from 'drizzle-orm'
 
 export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString('hex')
@@ -23,4 +26,37 @@ export async function getAuthSession(event: H3Event) {
     name: 'session',
     password: config.sessionPassword
   })
+}
+
+export async function requireAdmin(event: H3Event): Promise<{ role: 'admin' | 'customer' }> {
+  const session = await getAuthSession(event)
+
+  if (!session.data.userId) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'No estás autenticado'
+    })
+  }
+
+  const [user] = await db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, session.data.userId))
+    .limit(1)
+
+  if (!user) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Usuario no encontrado'
+    })
+  }
+
+  if (user.role !== 'admin') {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'No tienes permisos de administrador'
+    })
+  }
+
+  return user
 }

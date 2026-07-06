@@ -1,9 +1,12 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../../db'
 import { products } from '../../db/schema'
+import { requireAdmin } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
   try {
+    await requireAdmin(event)
+
     const idParam = getRouterParam(event, 'id')
 
     if (!idParam) {

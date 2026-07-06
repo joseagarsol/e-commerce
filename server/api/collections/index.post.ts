@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { collections } from '../../db/schema'
 import { db } from '../../db'
+import { requireAdmin } from '~~/server/utils/auth'
 
 const schema = z.object({
   id: z.string().optional(),
@@ -11,6 +12,7 @@ const schema = z.object({
 
 export default defineEventHandler(async (event) => {
   try {
+    await requireAdmin(event)
     const body = await readBody(event)
     const validatedData = schema.parse(body)
 
