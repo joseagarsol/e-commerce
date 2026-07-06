@@ -221,7 +221,7 @@ const isSizeSoldOut = (size: Size) => {
             name="i-lucide-truck"
             class="size-5"
           />
-          <span>Envío gratuito en pedidos superiores a 150€</span>
+          <span>Envío gratuito en pedidos superiores a 25€</span>
         </div>
         <div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
           <UIcon
