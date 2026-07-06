@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { eq, and, ne } from 'drizzle-orm'
 import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
+import { requireAdmin } from '~~/server/utils/auth'
 
 const discountCodeSchema = z.object({
   code: z.string()
@@ -23,6 +24,7 @@ const discountCodeSchema = z.object({
 
 export default defineEventHandler(async (event) => {
   try {
+    await requireAdmin(event)
     const idParam = getRouterParam(event, 'id')
 
     if (!idParam) {

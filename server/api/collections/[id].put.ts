@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { db } from '../../db'
 import { collections } from '../../db/schema'
 import { eq } from 'drizzle-orm'
+import { requireAdmin } from '~~/server/utils/auth'
 
 const schema = z.object({
   id: z.string().optional(),
@@ -12,6 +13,7 @@ const schema = z.object({
 
 export default defineEventHandler(async (event) => {
   try {
+    await requireAdmin(event)
     const idParam = getRouterParam(event, 'id')
 
     if (!idParam) {

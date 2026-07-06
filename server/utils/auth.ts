@@ -28,10 +28,10 @@ export async function getAuthSession(event: H3Event) {
   })
 }
 
-export async function requireAdmin(event: H3Event) {
+export async function requireAdmin(event: H3Event): Promise<{ role: 'admin' | 'customer' }> {
   const session = await getAuthSession(event)
 
-  if (!session) {
+  if (!session.data.userId) {
     throw createError({
       statusCode: 401,
       statusMessage: 'No estás autenticado'
