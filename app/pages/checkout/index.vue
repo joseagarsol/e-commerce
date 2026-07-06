@@ -9,6 +9,7 @@ definePageMeta({
 
 const cartStore = useCartStore()
 const { getDiscountedPrice, promo } = usePromotions()
+const toast = useToast()
 
 const baseSchema = z.object({
   email: z.email('El campo email no es correcto'),
@@ -308,7 +309,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     }
   } catch (error) {
     console.error('Error al guardar el pedido:', error)
-    alert('No se pudo guardar el pedido en la base de datos')
+    toast.add({
+      title: 'Error al realizar el pedido',
+      description: 'No se pudo guardar el pedido en la base de datos. Por favor, inténtelo de nuevo.',
+      color: 'error'
+    })
   } finally {
     isSubmitting.value = false
   }

@@ -22,6 +22,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const isSubmitting = ref(false)
+const toast = useToast()
 
 const state = reactive<Partial<Schema>>({
   name: props.collection?.name || '',
@@ -83,7 +84,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         fileToDelete.value = null
       }
 
-      alert('¡Colección actualizada con éxito!')
+      toast.add({
+        title: 'Colección actualizada',
+        description: '¡Colección actualizada con éxito!',
+        color: 'success'
+      })
     } else {
       await $fetch('/api/collections', {
         method: 'POST',
@@ -94,13 +99,21 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       state.description = ''
       state.imageUrl = ''
 
-      alert('¡Colección guardada con éxito!')
+      toast.add({
+        title: 'Colección guardada',
+        description: '¡Colección guardada con éxito!',
+        color: 'success'
+      })
     }
 
     emit('success')
   } catch (error) {
     console.error('Error al guardar la colección:', error)
-    alert('No se pudo guardar la colección en la base de datos')
+    toast.add({
+      title: 'Error al guardar',
+      description: 'No se pudo guardar la colección en la base de datos',
+      color: 'error'
+    })
   } finally {
     isSubmitting.value = false
   }

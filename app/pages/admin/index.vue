@@ -3,6 +3,13 @@ import type { Product } from '~/types/product'
 import type { Collection } from '~/types/collection'
 import type { Promotion } from '~/types/promotion'
 import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
+import { FetchError } from 'ofetch'
+
+const toast = useToast()
+
+const isConfirmDeleteOpen = ref(false)
+const isDeleting = ref(false)
+const itemToDelete = ref<{ type: 'product' | 'collection' | 'coupon', id: string } | null>(null)
 
 definePageMeta({
   middleware: 'admin'
@@ -34,35 +41,62 @@ const selectedProduct = ref<Product | null>(null)
 const selectedCollection = ref<Collection | null>(null)
 const selectedCoupon = ref<Promotion | null>(null)
 
-const handleDeleteProduct = async (id: string) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar esta prenda de forma permanente?')) return
+const confirmDelete = (type: 'product' | 'collection' | 'coupon', id: string) => {
+  itemToDelete.value = { type, id }
+  isConfirmDeleteOpen.value = true
+}
+
+const executeDelete = async () => {
+  if (!itemToDelete.value) return
+  isDeleting.value = true
+  const { type, id } = itemToDelete.value
   try {
-    await $fetch(`/api/products/${id}`, {
-      method: 'DELETE'
-    })
+    let url = ''
+    let entityName = ''
+    if (type === 'product') {
+      url = `/api/products/${id}`
+      entityName = 'prenda'
+    } else if (type === 'collection') {
+      url = `/api/collections/${id}`
+      entityName = 'colección'
+    } else if (type === 'coupon') {
+      url = `/api/discount-codes/${id}`
+      entityName = 'cupón'
+    }
+
+    await $fetch(url, { method: 'DELETE' })
     await refresh()
+
+    toast.add({
+      title: 'Eliminado con éxito',
+      description: `La ${entityName} ha sido eliminada correctamente de la base de datos.`,
+      color: 'success'
+    })
   } catch (error) {
-    console.error('Error deleting product:', error)
-    alert('No se pudo eliminar el producto de la base de datos')
+    console.error(`Error al eliminar ${type}:`, error)
+    let errorMessage = 'No se pudo eliminar de la base de datos.'
+    if (error instanceof FetchError && error.data?.statusMessage) {
+      errorMessage = error.data.statusMessage
+    }
+    toast.add({
+      title: 'Error al eliminar',
+      description: errorMessage,
+      color: 'error'
+    })
+  } finally {
+    isDeleting.value = false
+    isConfirmDeleteOpen.value = false
+    itemToDelete.value = null
   }
 }
+
+const handleDeleteProduct = (id: string) => confirmDelete('product', id)
+const handleDeleteCollection = (id: string) => confirmDelete('collection', id)
+const handleDeleteCoupon = (id: string) => confirmDelete('coupon', id)
 
 const handleEditProduct = (product: Product) => {
   isAddProductOpen.value = true
   selectedProduct.value = product
-}
-
-const handleDeleteCollection = async (id: string) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar esta colección de forma permanente?')) return
-  try {
-    await $fetch(`/api/collections/${id}`, {
-      method: 'DELETE'
-    })
-    await refresh()
-  } catch (error) {
-    console.error('Error deleting collection:', error)
-    alert('No se pudo eliminar la colección de la base de datos')
-  }
 }
 
 const handleEditCollection = (collection: Collection) => {
@@ -73,19 +107,6 @@ const handleEditCollection = (collection: Collection) => {
 const handleEditCoupon = (coupon: Promotion) => {
   isAddCouponOpen.value = true
   selectedCoupon.value = coupon
-}
-
-const handleDeleteCoupon = async (id: string) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar este cupón de forma permanente?')) return
-  try {
-    await $fetch(`/api/discount-codes/${id}`, {
-      method: 'DELETE'
-    })
-    await refresh()
-  } catch (error) {
-    console.error('Error deleting coupon:', error)
-    alert('No se pudo eliminar el cupón de la base de datos')
-  }
 }
 
 const handleSuccessAction = () => {
@@ -113,10 +134,18 @@ const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
       body: { status: newStatus }
     })
     await refresh()
-    alert('Estado del pedido actualizado correctamente.')
+    toast.add({
+      title: 'Estado actualizado',
+      description: 'El estado del pedido se ha actualizado correctamente.',
+      color: 'success'
+    })
   } catch (error) {
     console.error('Error updating order status:', error)
-    alert('No se pudo actualizar el estado del pedido')
+    toast.add({
+      title: 'Error de actualización',
+      description: 'No se pudo actualizar el estado del pedido en la base de datos.',
+      color: 'error'
+    })
   }
 }
 
@@ -343,5 +372,36 @@ watch(isAddCouponOpen, (isOpen) => {
         </div>
       </template>
     </UTabs>
+
+    <!-- Modal de Confirmación de Eliminación -->
+    <UModal
+      v-model:open="isConfirmDeleteOpen"
+      title="Confirmar eliminación"
+      description="¿Estás seguro de que deseas eliminar este elemento de forma permanente? Esta acción no se puede deshacer."
+      :close="{
+        color: 'neutral',
+        variant: 'outline',
+        class: 'rounded-full cursor-pointer'
+      }"
+    >
+      <template #footer>
+        <div class="flex justify-end gap-2 w-full">
+          <UButton
+            label="Cancelar"
+            color="neutral"
+            variant="ghost"
+            class="cursor-pointer"
+            @click="() => { isConfirmDeleteOpen = false }"
+          />
+          <UButton
+            label="Eliminar"
+            color="error"
+            :loading="isDeleting"
+            class="cursor-pointer"
+            @click="executeDelete"
+          />
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
