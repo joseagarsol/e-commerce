@@ -69,7 +69,6 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
         class="cursor-pointer"
       />
     </div>
-    <!-- Lista de pedidos real -->
     <div
       v-else
       class="space-y-6"
@@ -86,7 +85,15 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
                 ID del Pedido: {{ order.id }}
               </p>
               <p class="text-xs text-zinc-500">
-                {{ formatDate(order.createdAt) }}
+                <NuxtTime
+                  :datetime="new Date(order.createdAt.replace(' ', 'T') + 'Z')"
+                  locale="es-ES"
+                  year="numeric"
+                  month="long"
+                  day="numeric"
+                  hour="2-digit"
+                  minute="2-digit"
+                />
               </p>
             </div>
             <UBadge
