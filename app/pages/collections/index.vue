@@ -30,7 +30,7 @@ const { data: collections, error } = await useFetch<Collection[]>('/api/collecti
         <NuxtLink
           v-for="collection in collections"
           :key="collection.id"
-          :to="'/collections/'+collection.id"
+          :to="'/collections/'+collection.slug"
           class="group collection-card flex flex-col gap-6 h-full"
         >
           <div class="relative overflow-hidden rounded-md shadow-lg aspect-[3/4]">

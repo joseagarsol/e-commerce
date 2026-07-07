@@ -18,12 +18,15 @@ const { data: collections } = await useFetch<Collection[]>('/api/collections')
         </p>
       </div>
       <!-- Bento Grid Container -->
-      <div v-if="collections && collections.length" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 auto-rows-[300px] md:auto-rows-[350px]">
+      <div
+        v-if="collections && collections.length"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 auto-rows-[300px] md:auto-rows-[350px]"
+      >
         <!-- Colección Principal (Grande - Ocupa 2 columnas y 2 filas en desktop) -->
         <NuxtLink
           v-for="(col, index) in collections.slice(0, 3)"
           :key="col.id"
-          :to="`/collections/${col.id}`"
+          :to="`/collections/${col.slug}`"
           :class="[
             'group relative overflow-hidden rounded-xl flex items-end cursor-pointer bg-zinc-900',
             index === 0 ? 'md:col-span-2 md:row-span-2 p-8 md:p-12' : 'p-6 md:p-8'
@@ -41,13 +44,18 @@ const { data: collections } = await useFetch<Collection[]>('/api/collections')
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-70 transition-opacity duration-700 group-hover:opacity-90" />
           <!-- Textos y CTA -->
           <div class="relative z-10 flex flex-col gap-3">
-            <span v-if="index === 0" class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-light text-white/80">
+            <span
+              v-if="index === 0"
+              class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-light text-white/80"
+            >
               Últimas tendencias
             </span>
-            <h3 :class="[
-              'font-light text-white tracking-tight',
-              index === 0 ? 'text-4xl md:text-6xl' : 'text-2xl md:text-4xl'
-            ]">
+            <h3
+              :class="[
+                'font-light text-white tracking-tight',
+                index === 0 ? 'text-4xl md:text-6xl' : 'text-2xl md:text-4xl'
+              ]"
+            >
               {{ col.name }}
             </h3>
             <div class="overflow-hidden h-0 group-hover:h-[24px] transition-all duration-500 ease-out mt-2">

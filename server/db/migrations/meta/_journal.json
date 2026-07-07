@@ -50,6 +50,20 @@
       "when": 1782464655054,
       "tag": "0006_certain_leech",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1783434037006,
+      "tag": "0007_known_luminals",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1783440304375,
+      "tag": "0008_lucky_doomsday",
+      "breakpoints": true
     }
   ]
 }

@@ -16,11 +16,12 @@ definePageMeta({
 })
 
 const { data: adminData, refresh } = await useAsyncData('admin-dashboard', async () => {
+  const headers = useRequestHeaders(['cookie'])
   const [products, collections, coupons, orders] = await Promise.all([
-    $fetch<Product[]>('/api/products'),
-    $fetch<Collection[]>('/api/collections'),
-    $fetch<Promotion[]>('/api/discount-codes'),
-    $fetch<OrderResponseDTO[]>('/api/orders')
+    $fetch<Product[]>('/api/products', { headers }),
+    $fetch<Collection[]>('/api/collections', { headers }),
+    $fetch<Promotion[]>('/api/discount-codes', { headers }),
+    $fetch<OrderResponseDTO[]>('/api/orders', { headers })
   ])
   return { products, collections, coupons, orders }
 })

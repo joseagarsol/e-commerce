@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `collections_slug_unique` ON `collections` (`slug`);

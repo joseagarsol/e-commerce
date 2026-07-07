@@ -14,6 +14,7 @@ const emit = defineEmits<{
 const columns: TableColumn<Collection>[] = [
   { accessorKey: 'imageUrl', header: 'Colección' },
   { accessorKey: 'name', header: 'Nombre' },
+  { accessorKey: 'slug', header: 'Slug' },
   { accessorKey: 'description', header: 'Descripción' },
   { accessorKey: 'actions', header: 'Acciones' }
 ]

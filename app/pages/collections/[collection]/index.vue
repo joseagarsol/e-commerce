@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Product } from '~/types/product'
+import type { Product } from '../../../types/product'
+import type { Collection } from '../../../types/collection'
 
 definePageMeta({
   layout: 'store'
@@ -8,9 +9,18 @@ definePageMeta({
 const route = useRoute()
 const slug = route.params.collection as string
 
-const parseSlug = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-
+const { data: collection } = await useFetch<Collection>('/api/collections/' + slug)
 const { data: products } = await useFetch<Product[]>('/api/products?collection=' + slug)
+
+if (!collection.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'La colección solicitada no existe',
+    fatal: true
+  })
+}
+
+const collectionName = computed(() => collection.value?.name)
 </script>
 
 <template>
@@ -18,10 +28,10 @@ const { data: products } = await useFetch<Product[]>('/api/products?collection='
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
       <div class="space-y-2">
         <h1 class="font-serif italic font-light text-4xl md:text-5xl text-zinc-900 dark:text-white leading-tight">
-          {{ parseSlug }}
+          {{ collectionName }}
         </h1>
         <p class="text-sm text-zinc-500 dark:text-zinc-400 max-w-md tracking-wide">
-          Explora nuestra selección completa de la colección {{ parseSlug }}.
+          Explora nuestra selección completa de la colección {{ collectionName }}.
         </p>
       </div>
 
