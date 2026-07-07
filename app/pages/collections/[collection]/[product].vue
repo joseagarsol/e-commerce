@@ -2,6 +2,10 @@
 import { useCartStore } from '@/stores/cart'
 import type { Product, CartItem, Size } from '~/types/product'
 
+definePageMeta({
+  layout: 'store'
+})
+
 const route = useRoute()
 const productId = route.params.product as string
 
@@ -19,31 +23,7 @@ const activeProduct = product.value
 
 const cartStore = useCartStore()
 
-definePageMeta({
-  layout: 'store'
-})
-
 const isWishlisted = ref(false)
-
-const getStockBadge = (stock: number) => {
-  if (stock <= 5) {
-    return {
-      color: 'error' as const,
-      label: `Últimas ${stock} unidades`,
-      icon: 'i-lucide-octagon-x'
-    }
-  }
-  if (stock <= 25) {
-    return {
-      color: 'warning' as const,
-      label: 'Últimas 25 unidades',
-      icon: 'i-lucide-triangle-alert'
-    }
-  }
-  return null
-}
-
-const stockBadge = getStockBadge(activeProduct.stock)
 
 const carousel = useTemplateRef('carousel')
 const activeIndex = ref(0)
@@ -68,6 +48,35 @@ function select(index: number) {
 
 const selectedSize = ref<Size | null>(activeProduct.availableSizes?.[0] ?? null)
 
+const stockBadge = computed(() => {
+  const currentStock = activeProduct.stockBySize && selectedSize.value
+    ? activeProduct.stockBySize[selectedSize.value] ?? 0
+    : activeProduct.stock
+
+  if (currentStock === 0) {
+    return {
+      color: 'error' as const,
+      label: 'Agotado',
+      icon: 'i-lucide-octagon-x'
+    }
+  }
+  if (currentStock <= 5) {
+    return {
+      color: 'error' as const,
+      label: `Últimas ${currentStock} unidades`,
+      icon: 'i-lucide-octagon-x'
+    }
+  }
+  if (currentStock <= 25) {
+    return {
+      color: 'warning' as const,
+      label: 'Últimas 25 unidades',
+      icon: 'i-lucide-triangle-alert'
+    }
+  }
+  return null
+})
+
 const handleAddToCart = () => {
   const cartItem: CartItem = {
     ...activeProduct,
@@ -91,10 +100,6 @@ const isSoldOut = computed(() => {
   // Producto sin tallas
   return activeProduct.stock <= qtyInCart
 })
-
-const isSizeSoldOut = (size: Size) => {
-  return (activeProduct.stockBySize?.[size] ?? 0) <= 0
-}
 </script>
 
 <template>
@@ -173,16 +178,15 @@ const isSizeSoldOut = (size: Size) => {
             :label="size"
             size="xl"
             class="w-16 justify-center"
-            :disabled="isSizeSoldOut(size)"
-            @click="selectedSize = size"
+            @click="() => { selectedSize = size }"
           />
         </div>
       </div>
       <div class="flex flex-row gap-2">
         <UButton
-          label="Añadir a la cesta"
+          :label="isSoldOut ? 'Agotado' : 'Añadir a la cesta'"
           size="xl"
-          trailing-icon="i-lucide-shopping-cart"
+          :icon="isSoldOut ? 'i-lucide-octagon-x' : 'i-lucide-shopping-cart'"
           variant="outline"
           class="w-fit"
           :disabled="isSoldOut"
@@ -193,7 +197,7 @@ const isSizeSoldOut = (size: Size) => {
           variant="ghost"
           :color="isWishlisted ? 'error' : 'neutral'"
           class="w-fit"
-          @click="isWishlisted = !isWishlisted"
+          @click="() => { isWishlisted = !isWishlisted }"
         >
           <svg
             v-if="isWishlisted"
