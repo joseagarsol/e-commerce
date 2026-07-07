@@ -15,6 +15,7 @@ const emit = defineEmits<{
 
 const schema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  slug: z.string().min(1, 'El slug debe tener al menos 1 caracter'),
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
   imageUrl: z.string().min(1, 'Debes subir una imagen')
 })
@@ -26,12 +27,14 @@ const toast = useToast()
 
 const state = reactive<Partial<Schema>>({
   name: props.collection?.name || '',
+  slug: props.collection?.slug || '',
   description: props.collection?.description || '',
   imageUrl: props.collection?.imageUrl || ''
 })
 
 watch(() => props.collection, (newCollection) => {
   state.name = newCollection?.name || ''
+  state.slug = newCollection?.slug || ''
   state.description = newCollection?.description || ''
   state.imageUrl = newCollection?.imageUrl || ''
 })
@@ -46,6 +49,25 @@ const onImageUploaded = (newUrls: string | string[]) => {
     newUploadedUrl.value = ''
   }
 }
+
+const crearSlug = (texto: string) => {
+  return texto
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '')
+}
+
+watch(() => state.name, (newName) => {
+  if (newName) {
+    state.slug = crearSlug(newName)
+  }
+}, { immediate: true })
 
 const removeExistingImage = () => {
   if (state.imageUrl) {
@@ -65,6 +87,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   try {
     const payload = {
       name: event.data.name,
+      slug: event.data.slug,
       description: event.data.description,
       imageUrl: event.data.imageUrl
     }
@@ -96,6 +119,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       })
 
       state.name = ''
+      state.slug = ''
       state.description = ''
       state.imageUrl = ''
 
@@ -136,6 +160,18 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         v-model="state.name"
         placeholder="Ej. Colección Primavera Verano"
         class="w-full"
+      />
+    </UFormField>
+
+    <UFormField
+      label="Slug"
+      name="slug"
+    >
+      <UInput
+        v-model="state.slug"
+        placeholder="El slug se introduce automáticamente"
+        class="w-full"
+        disabled
       />
     </UFormField>
 

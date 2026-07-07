@@ -12,6 +12,7 @@ export const discountCodes = sqliteTable('discount_codes', {
 export const collections = sqliteTable('collections', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
   description: text('description'),
   imageUrl: text('image_url')
 })
