@@ -5,6 +5,11 @@ import { useCartStore } from '@/stores/cart'
 const cartStore = useCartStore()
 const colorMode = useColorMode()
 
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
+
 const items = ref<NavigationMenuItem[][]> ([
   [
     {
@@ -61,15 +66,16 @@ const isDark = computed({
     />
     <template #right>
       <UButton
+        v-if="!colorMode.forced"
         color="primary"
         variant="ghost"
         class="group"
-        :aria-label="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        :aria-label="isMounted && isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
         @click="() => { isDark = !isDark }"
       >
         <UIcon
-          :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
-          class="size-5 transition-transform group-hover:scale-110 group-active:scale-90 "
+          :name="isMounted && isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
+          class="size-5 transition-transform group-hover:scale-110 group-active:scale-90"
         />
       </UButton>
       <UPopover :content="{ align: 'end', side: 'bottom', sideOffset: 12 }">
@@ -96,8 +102,8 @@ const isDark = computed({
         }"
       >
         <UChip
-          :show="cartCount > 0"
-          :text="cartCount"
+          :show="isMounted && cartCount > 0"
+          :text="isMounted ? cartCount : 0"
           size="2xl"
           :ui="{ base: 'size-4 text-xs text-gray-900' }"
         >
