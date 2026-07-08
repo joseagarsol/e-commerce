@@ -31,6 +31,7 @@ const stockBySizeSchema = z.record(
 const schema = (hasSizesVal: boolean) => z.object({
   name: z.string()
     .min(3, 'El nombre del producto debe tener al menos 3 caracteres'),
+  slug: z.string().min(1, 'El slug debe tener al menos 1 caracter'),
   description: z.string()
     .min(5, 'La descripción debe tener al menos 5 caracteres'),
   price: z.number({ message: 'El precio debe ser un número' })
@@ -47,6 +48,7 @@ type Schema = z.output<ReturnType<typeof schema>>
 
 const state = reactive<Partial<Schema>>({
   name: props.product?.name || '',
+  slug: props.product?.slug || '',
   description: props.product?.description || '',
   price: props.product?.price || undefined,
   images: props.product?.images || [],
@@ -87,6 +89,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   try {
     const payload = {
       name: event.data.name,
+      slug: event.data.slug,
       description: event.data.description,
       price: event.data.price,
       images: event.data.images,
@@ -127,6 +130,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       })
 
       state.name = ''
+      state.slug = ''
       state.description = ''
       state.price = undefined
       state.images = []
@@ -157,6 +161,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 
 watch(() => props.product, (newProduct) => {
   state.name = newProduct?.name || ''
+  state.slug = newProduct?.slug || ''
   state.description = newProduct?.description || ''
   state.price = newProduct?.price || undefined
   state.images = newProduct?.images || []
@@ -165,6 +170,12 @@ watch(() => props.product, (newProduct) => {
   state.stockBySize = newProduct?.stockBySize || null
   hasSizes.value = !!newProduct?.stockBySize
 })
+
+watch(() => state.name, (newName) => {
+  if (newName) {
+    state.slug = crearSlug(newName)
+  }
+}, { immediate: true })
 
 const formRef = useTemplateRef('formRef')
 const filesToDelete = ref<string[]>([])
@@ -213,6 +224,18 @@ const removeExistingImage = async (index: number) => {
         v-model="state.name"
         placeholder="Ej. Camiseta Lino Premium"
         class="w-full"
+      />
+    </UFormField>
+
+    <UFormField
+      label="Slug"
+      name="slug"
+    >
+      <UInput
+        v-model="state.slug"
+        placeholder="El slug se introduce automáticamente"
+        class="w-full"
+        disabled
       />
     </UFormField>
 

@@ -11,7 +11,7 @@ const formatCollectionId = (id?: string) => {
 }
 
 const handleNavigate = (item: Product) => {
-  navigateTo(`/collections/${item.collectionId || 'all'}/${item.id}`)
+  navigateTo(`/collections/${item.collectionSlug || 'all'}/${item.slug}`)
 }
 </script>
 
@@ -71,7 +71,7 @@ const handleNavigate = (item: Product) => {
         </div>
         <div class="text-center md:text-left">
           <p class="text-[10px] uppercase tracking-widest text-neutral-500 mb-1">
-            {{ formatCollectionId(item.collectionId) }}
+            {{ item.collectionName || formatCollectionId(item.collectionId) }}
           </p>
           <h3 class="text-sm font-medium tracking-wide dark:text-white mb-1">
             {{ item.name }}
