@@ -37,6 +37,8 @@ export interface OrderItemDTO {
   productName?: string
   productImage?: string
   collectionId?: string | null
+  productSlug?: string
+  collectionSlug?: string
 }
 
 export interface OrderResponseDTO {
@@ -69,6 +71,8 @@ export function mapOrderToDTO(
     productName?: string | null
     productImages?: string[] | null
     collectionId?: string | null
+    productSlug?: string | null
+    collectionSlug?: string | null
   })[] = []
 ): OrderResponseDTO {
   return {
@@ -101,7 +105,9 @@ export function mapOrderToDTO(
       productImage: item.productImages && Array.isArray(item.productImages) && item.productImages.length > 0
         ? item.productImages[0]
         : undefined,
-      collectionId: item.collectionId ?? undefined
+      collectionId: item.collectionId ?? undefined,
+      productSlug: item.productSlug ?? undefined,
+      collectionSlug: item.collectionSlug ?? undefined
     }))
   }
 }

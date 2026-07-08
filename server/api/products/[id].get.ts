@@ -1,6 +1,6 @@
-import { eq } from 'drizzle-orm'
+import { eq, or } from 'drizzle-orm'
 import { db } from '../../db'
-import { products } from '../../db/schema'
+import { products, collections } from '../../db/schema'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -9,12 +9,30 @@ export default defineEventHandler(async (event) => {
     if (!idParam) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'ID del producto no proporcionado'
+        statusMessage: 'ID o slug del producto no proporcionado'
       })
     }
 
-    const product = await db.select().from(products)
-      .where(eq(products.id, idParam))
+    const product = await db.select({
+      id: products.id,
+      name: products.name,
+      slug: products.slug,
+      description: products.description,
+      price: products.price,
+      images: products.images,
+      stock: products.stock,
+      availableSizes: products.availableSizes,
+      stockBySize: products.stockBySize,
+      collectionId: products.collectionId,
+      collectionSlug: collections.slug,
+      collectionName: collections.name
+    })
+      .from(products)
+      .leftJoin(collections, eq(products.collectionId, collections.id))
+      .where(or(
+        eq(products.id, idParam),
+        eq(products.slug, idParam)
+      ))
       .limit(1)
 
     return product[0]

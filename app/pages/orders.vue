@@ -117,8 +117,8 @@ const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/ap
             >
               <!-- Imagen del producto -->
               <NuxtLink
-                v-if="item.collectionId"
-                :to="`/collections/${item.collectionId}/${item.productId}`"
+                v-if="item.collectionSlug"
+                :to="`/collections/${item.collectionSlug}/${item.productSlug}`"
                 class="relative overflow-hidden rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 size-16 sm:size-20 flex-shrink-0 group cursor-pointer block"
               >
                 <NuxtImg

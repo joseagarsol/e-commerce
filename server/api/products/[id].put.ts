@@ -32,10 +32,18 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validatedData = schema.parse(body)
 
+    const productSlug = validatedData.name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+
     const [updatedProduct] = await db
       .update(products)
       .set({
         name: validatedData.name,
+        slug: productSlug,
         description: validatedData.description,
         price: validatedData.price,
         images: validatedData.images,

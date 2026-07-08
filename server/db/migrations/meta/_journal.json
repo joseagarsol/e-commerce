@@ -64,6 +64,20 @@
       "when": 1783440304375,
       "tag": "0008_lucky_doomsday",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1783517236288,
+      "tag": "0009_mean_hemingway",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1783517266500,
+      "tag": "0010_complete_exiles",
+      "breakpoints": true
     }
   ]
 }

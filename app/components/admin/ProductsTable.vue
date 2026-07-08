@@ -14,6 +14,7 @@ const emit = defineEmits<{
 const columns: TableColumn<Product>[] = [
   { accessorKey: 'images', header: 'Prenda' },
   { accessorKey: 'name', header: 'Detalles' },
+  { accessorKey: 'slug', header: 'Slug' },
   { accessorKey: 'price', header: 'Precio' },
   { accessorKey: 'stock', header: 'Stock' },
   { accessorKey: 'actions', header: 'Acciones' }

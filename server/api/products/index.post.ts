@@ -27,9 +27,17 @@ export default defineEventHandler(async (event) => {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
+    const productSlug = validatedData.name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+
     const [newProduct] = await db.insert(products).values({
       ...validatedData,
-      id: productId
+      id: productId,
+      slug: productSlug
     }).returning()
 
     setResponseStatus(event, 201)

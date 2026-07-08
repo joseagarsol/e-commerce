@@ -50,19 +50,6 @@ const onImageUploaded = (newUrls: string | string[]) => {
   }
 }
 
-const crearSlug = (texto: string) => {
-  return texto
-    .toString()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '')
-}
-
 watch(() => state.name, (newName) => {
   if (newName) {
     state.slug = crearSlug(newName)
