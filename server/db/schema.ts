@@ -20,6 +20,7 @@ export const collections = sqliteTable('collections', {
 export const products = sqliteTable('products', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
   description: text('description').notNull(),
   price: real('price').notNull(),
   images: text('images', { mode: 'json' }).$type<string[]>().notNull(),
