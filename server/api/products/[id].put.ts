@@ -3,6 +3,8 @@ import { db } from '../../db'
 import { products } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapProductEntityToProduct } from '~~/server/mappers/product'
+import { updatedResponse } from '~~/server/utils/response'
 
 const schema = z.object({
   id: z.string().optional(),
@@ -62,11 +64,10 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    return {
-      success: true,
-      message: 'Producto actualizado correctamente',
-      updatedProduct: updatedProduct
-    }
+    const message = 'Producto actualizado correctamente'
+    const mappedProduct = mapProductEntityToProduct(updatedProduct)
+
+    return updatedResponse<Product>(message, mappedProduct)
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)

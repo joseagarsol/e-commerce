@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Size } from '~/types/product'
-
 const model = defineModel<Record<string, number> | null>({
   default: null
 })
@@ -72,7 +70,7 @@ watch(() => ALL_SIZES.value, (newSizes) => {
         :label="size.label"
         :color="size.active ? 'primary' : 'neutral'"
         class="cursor-pointer"
-        @click="size.active = !size.active"
+        @click="() => { size.active = !size.active }"
       />
     </div>
 

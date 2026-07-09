@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useCartStore } from '@/stores/cart'
-import type { Product, CartItem, Size } from '~/types/product'
 
 definePageMeta({
   layout: 'store'

@@ -1,6 +1,7 @@
 import { eq, or } from 'drizzle-orm'
 import { db } from '../../db'
 import { products, collections } from '../../db/schema'
+import { mapProductEntityToProduct } from '~~/server/mappers/product'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,7 +14,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const product = await db.select({
+    const [product] = await db.select({
       id: products.id,
       name: products.name,
       slug: products.slug,
@@ -35,7 +36,15 @@ export default defineEventHandler(async (event) => {
       ))
       .limit(1)
 
-    return product[0]
+    if (!product) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Producto no encontrado'
+      })
+    }
+
+    const { collectionSlug, collectionName, ...productEntity } = product
+    return mapProductEntityToProduct(productEntity, { slug: collectionSlug, name: collectionName })
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error
@@ -43,7 +52,7 @@ export default defineEventHandler(async (event) => {
 
     throw createError({
       statusCode: 500,
-      statusMessage: 'Error al eliminar el producto de la base de datos'
+      statusMessage: 'Error al obtener el producto de la base de datos'
     })
   }
 })

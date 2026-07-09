@@ -2,6 +2,8 @@ import { eq } from 'drizzle-orm'
 import { db } from '../../db'
 import { products } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapProductEntityToProduct } from '~~/server/mappers/product'
+import { deletedResponse } from '~~/server/utils/response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -16,22 +18,21 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const result = await db.delete(products)
+    const [deletedProduct] = await db.delete(products)
       .where(eq(products.id, idParam))
       .returning()
 
-    if (result.length === 0) {
+    if (!deletedProduct) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Producto no encontrado'
       })
     }
 
-    return {
-      success: true,
-      message: 'Producto eliminado correctamente',
-      deletedProduct: result[0]
-    }
+    const message = 'Producto eliminado correctamente'
+    const mappedProduct = mapProductEntityToProduct(deletedProduct)
+
+    return deletedResponse<Product>(message, mappedProduct)
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error
