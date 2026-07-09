@@ -1,12 +1,10 @@
 import { FetchError } from 'ofetch'
-import type { Promotion } from '~/types/promotion'
-import type { ApiResponse } from '~/types/api'
 import { useCartStore } from '@/stores/cart'
 
 export function usePromotions() {
   const errorPromo = useState<string | null>('errorPromo', () => null)
   const promoCode = useState<string>('promoCode', () => '')
-  const promo = useState<Promotion | null>('promo', () => null)
+  const promo = useState<DiscountCode | null>('promo', () => null)
   const cartStore = useCartStore()
 
   const applyPromotions = async () => {
@@ -18,7 +16,7 @@ export function usePromotions() {
 
     try {
       errorPromo.value = null
-      const response = await $fetch<ApiResponse<Promotion>>('/api/discount-codes/validate', {
+      const response = await $fetch('/api/discount-codes/validate', {
         method: 'POST',
         body: {
           code: promoCode.value
@@ -49,7 +47,7 @@ export function usePromotions() {
 
   const getDiscountedPrice = (
     price: number,
-    discountType: Promotion['discountType'],
+    discountType: DiscountCode['discountType'],
     amount: number
   ) => {
     let discountedPrice = price

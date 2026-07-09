@@ -4,6 +4,7 @@ import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
 import { mapDiscountCodeEntityToDiscountCode, mapDiscountCodeToDiscountCodeEntity } from '~~/server/mappers/discountCodes'
+import { updatedResponse } from '~~/server/utils/response'
 
 const discountCodeSchema = z.object({
   code: z.string()

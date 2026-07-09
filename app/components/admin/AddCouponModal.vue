@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, SelectItem } from '@nuxt/ui'
-import type { Promotion } from '~/types/promotion'
 import * as z from 'zod'
+import type { CreatedResponse, UpdatedResponse } from '~~/server/types/response'
 
 interface AddCouponModalProps {
-  coupon?: Promotion | null
+  coupon?: DiscountCode | null
 }
 
 const props = defineProps<AddCouponModalProps>()
@@ -92,17 +92,18 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     }
 
     if (props.coupon) {
-      await $fetch(`/api/discount-codes/${props.coupon.id}`, {
+      const response = await $fetch<UpdatedResponse<DiscountCode>>(`/api/discount-codes/${props.coupon.id}`, {
         method: 'PUT',
         body: payload
       })
+
       toast.add({
         title: 'Cupón actualizado',
-        description: '¡Cupón actualizado con éxito!',
+        description: response.message || '¡Cupón actualizado con éxito!',
         color: 'success'
       })
     } else {
-      await $fetch('/api/discount-codes', {
+      const response = await $fetch<CreatedResponse<DiscountCode>>('/api/discount-codes', {
         method: 'POST',
         body: payload
       })
@@ -112,17 +113,18 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       state.discount = undefined
       toast.add({
         title: 'Cupón creado',
-        description: '¡Cupón creado con éxito!',
+        description: response.message || '¡Cupón creado con éxito!',
         color: 'success'
       })
     }
 
     emit('success')
-  } catch (error) {
-    console.error('Error al guardar el cupón:', error)
+  } catch (error: unknown) {
+    const fetchError = error as { data?: { message?: string, statusMessage?: string } }
+    const errorDescription = fetchError?.data?.message || fetchError?.data?.statusMessage || 'No se pudo guardar el cupón en la base de datos'
     toast.add({
       title: 'Error al guardar',
-      description: 'No se pudo guardar el cupón en la base de datos',
+      description: errorDescription,
       color: 'error'
     })
   } finally {
