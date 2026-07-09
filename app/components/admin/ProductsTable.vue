@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { Product } from '~/types/product'
 
 defineProps<{
   products: Product[] | undefined

@@ -1,13 +1,14 @@
 import { db } from '../../db'
 import { products, collections } from '../../db/schema'
 import { eq, or } from 'drizzle-orm'
+import { mapProductEntityToProduct } from '~~/server/mappers/product'
 
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event)
     const collectionId = query.collection as string | undefined
 
-    interface ProductWithCollection {
+    interface QueryResultProduct {
       id: string
       name: string
       slug: string
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
       collectionName: string | null
     }
 
-    let allProducts: ProductWithCollection[] = []
+    let allProducts: QueryResultProduct[] = []
 
     if (collectionId) {
       const [collection] = await db.select({ id: collections.id })
@@ -73,7 +74,10 @@ export default defineEventHandler(async (event) => {
         .leftJoin(collections, eq(products.collectionId, collections.id))
     }
 
-    return allProducts
+    return allProducts.map((p) => {
+      const { collectionSlug, collectionName, ...productEntity } = p
+      return mapProductEntityToProduct(productEntity, { slug: collectionSlug, name: collectionName })
+    })
   } catch {
     throw createError({
       statusCode: 500,

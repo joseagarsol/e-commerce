@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Product } from '~/types/product'
 import { FetchError } from 'ofetch'
 
 const toast = useToast()

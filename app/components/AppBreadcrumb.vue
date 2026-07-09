@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { BreadcrumbItem } from '@nuxt/ui'
-import type { Product } from '~/types/product'
 
 const route = useRoute()
 

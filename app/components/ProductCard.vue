@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { CartItem, Product, Size } from '~/types/product'
-
 interface Props {
   product: Product
 }

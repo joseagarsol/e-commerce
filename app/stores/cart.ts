@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import type { CartItem } from '~/types/product'
 
 export const useCartStore = defineStore('cart', () => {
   const mockProducts: CartItem[] = []

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Product } from '~/types/product'
-
 defineProps<{
   items: Product[]
 }>()
