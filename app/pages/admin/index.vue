@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import type { Collection } from '~/types/collection'
 import type { Promotion } from '~/types/promotion'
 import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
 import { FetchError } from 'ofetch'

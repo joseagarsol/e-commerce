@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { Collection } from '~/types/collection'
 
 defineProps<{
   collections: Collection[] | undefined

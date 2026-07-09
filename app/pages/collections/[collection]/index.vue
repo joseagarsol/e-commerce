@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Product } from '../../../types/product'
-import type { Collection } from '../../../types/collection'
 
 definePageMeta({
   layout: 'store'

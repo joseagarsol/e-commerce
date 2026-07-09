@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
-import type { Collection } from '~/types/collection'
 
 interface AddCollectionModalProps {
   collection?: Collection | null
@@ -80,7 +79,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     }
 
     if (props.collection) {
-      await $fetch(`/api/collections/${props.collection.id}`, {
+      const response = await $fetch(`/api/collections/${props.collection.id}`, {
         method: 'PUT',
         body: payload
       })
@@ -96,11 +95,11 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 
       toast.add({
         title: 'Colección actualizada',
-        description: '¡Colección actualizada con éxito!',
+        description: response.message,
         color: 'success'
       })
     } else {
-      await $fetch('/api/collections', {
+      const response = await $fetch('/api/collections', {
         method: 'POST',
         body: payload
       })
@@ -112,7 +111,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 
       toast.add({
         title: 'Colección guardada',
-        description: '¡Colección guardada con éxito!',
+        description: response.message,
         color: 'success'
       })
     }

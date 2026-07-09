@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Collection } from '~/types/collection'
-
 const { data: collections } = await useFetch<Collection[]>('/api/collections')
 </script>
 
