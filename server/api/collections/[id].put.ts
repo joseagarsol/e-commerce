@@ -3,6 +3,8 @@ import { db } from '../../db'
 import { collections } from '../../db/schema'
 import { eq, and, ne } from 'drizzle-orm'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapCollectionEntityToCollection } from '~~/server/mappers/collections'
+import { updatedResponse } from '~~/server/utils/response'
 
 const schema = z.object({
   id: z.string().optional(),
@@ -62,11 +64,10 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    return {
-      success: true,
-      message: 'Colección actualizada correctamente',
-      updatedCollection: updatedCollection
-    }
+    const message = 'Colección actualizada correctamente'
+    const mappedCollection = mapCollectionEntityToCollection(updatedCollection)
+
+    return updatedResponse<Collection>(message, mappedCollection)
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, SelectItem } from '@nuxt/ui'
-import type { Collection } from '~/types/collection'
 import type { Product } from '~/types/product'
 import * as z from 'zod'
 
