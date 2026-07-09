@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapDiscountCodeEntityToDiscountCode, mapDiscountCodeToDiscountCodeEntity } from '~~/server/mappers/discountCodes'
 
 const discountCodeSchema = z.object({
   code: z.string()
@@ -40,7 +41,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const couponId = crypto.randomUUID()
-    const dbInput = mapDTOToDB(validatedData)
+    const dbInput = mapDiscountCodeToDiscountCodeEntity(validatedData)
 
     const [newCoupon] = await db.insert(discountCodes).values({
       id: couponId,
@@ -50,12 +51,15 @@ export default defineEventHandler(async (event) => {
     if (!newCoupon) {
       throw createError({
         statusCode: 500,
-        statusMessage: 'Error al crear el cupón de descuento'
+        statusMessage: 'Error al crear el cupón'
       })
     }
 
     setResponseStatus(event, 201)
-    return mapDiscountToDTO(newCoupon)
+    const message = 'Cupón creado con éxito'
+    const mappedDiscountCode = mapDiscountCodeEntityToDiscountCode(newCoupon)
+
+    return createdResponse<DiscountCode>(message, mappedDiscountCode)
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)

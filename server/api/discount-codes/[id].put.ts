@@ -3,6 +3,7 @@ import { eq, and, ne } from 'drizzle-orm'
 import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapDiscountCodeEntityToDiscountCode, mapDiscountCodeToDiscountCodeEntity } from '~~/server/mappers/discountCodes'
 
 const discountCodeSchema = z.object({
   code: z.string()
@@ -52,7 +53,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const dbInput = mapDTOToDB(validatedData)
+    const dbInput = mapDiscountCodeToDiscountCodeEntity(validatedData)
 
     const [updatedCoupon] = await db.update(discountCodes)
       .set({
@@ -68,11 +69,10 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    return {
-      success: true,
-      message: 'Cupón actualizado correctamente',
-      updatedCoupon: mapDiscountToDTO(updatedCoupon)
-    }
+    const message = 'Cupón actualizado con éxito'
+    const mappedDiscountCode = mapDiscountCodeEntityToDiscountCode(updatedCoupon)
+
+    return updatedResponse<DiscountCode>(message, mappedDiscountCode)
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)

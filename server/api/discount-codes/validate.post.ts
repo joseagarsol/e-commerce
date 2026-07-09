@@ -2,14 +2,13 @@ import { z } from 'zod'
 import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
 import { eq } from 'drizzle-orm'
-import type { ApiResponse } from '~/types/api'
-import type { Promotion } from '~/types/promotion'
+import { mapDiscountCodeEntityToDiscountCode } from '~~/server/mappers/discountCodes'
 
 const couponSchema = z.object({
   code: z.string().min(1, 'El código es requerido')
 })
 
-export default defineEventHandler(async (event): Promise<ApiResponse<Promotion>> => {
+export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
     const validatedData = couponSchema.parse(body)
@@ -27,17 +26,10 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Promotion>>
       })
     }
 
-    return {
-      success: true,
-      message: 'Código de descuento aplicado con éxito',
-      data: {
-        id: discountCode.id,
-        code: discountCode.code,
-        discount: discountCode.discount,
-        discountType: discountCode.discountType,
-        apply: discountCode.apply
-      }
-    }
+    const mappedDiscountCode = mapDiscountCodeEntityToDiscountCode(discountCode)
+    const message = 'cupón aplicado con éxito'
+
+    return validatedDataResponse<DiscountCode>(message, mappedDiscountCode)
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error

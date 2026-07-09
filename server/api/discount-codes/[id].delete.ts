@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapDiscountCodeEntityToDiscountCode } from '~~/server/mappers/discountCodes'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -19,18 +20,18 @@ export default defineEventHandler(async (event) => {
       .where(eq(discountCodes.id, idParam))
       .returning()
 
-    if (result.length === 0) {
+    const [deletedDiscountCode] = result
+    if (!deletedDiscountCode) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Cupón no encontrado'
       })
     }
 
-    return {
-      success: true,
-      message: 'Cupón eliminado correctamente',
-      deletedCoupon: result[0]
-    }
+    const message = 'Cupón eliminado con éxito'
+    const mappedDiscountCode = mapDiscountCodeEntityToDiscountCode(deletedDiscountCode)
+
+    return deletedResponse<DiscountCode>(message, mappedDiscountCode)
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error

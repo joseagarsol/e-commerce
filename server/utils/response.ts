@@ -1,4 +1,4 @@
-import type { UpdatedResponse, CreatedResponse, DeletedResponse } from '../types/response'
+import type { UpdatedResponse, CreatedResponse, DeletedResponse, ValidatedResponse } from '../types/response'
 
 export function updatedResponse<T>(message: string, updatedEntity: T): UpdatedResponse<T> {
   return {
@@ -21,5 +21,13 @@ export function deletedResponse<T>(message: string, deletedEntity: T): DeletedRe
     success: true,
     message: message,
     deletedEntity: deletedEntity
+  }
+}
+
+export function validatedDataResponse<T>(message: string, data: T): ValidatedResponse<T> {
+  return {
+    success: true,
+    message: message,
+    data: data
   }
 }

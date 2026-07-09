@@ -1,4 +1,4 @@
-export interface Promotion {
+export interface DiscountCode {
   id: string
   code: string
   discountType: 'percent' | 'price'
