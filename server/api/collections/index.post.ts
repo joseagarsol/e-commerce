@@ -3,6 +3,8 @@ import { collections } from '../../db/schema'
 import { db } from '../../db'
 import { requireAdmin } from '~~/server/utils/auth'
 import { or, eq } from 'drizzle-orm'
+import { mapCollectionEntityToCollection } from '~~/server/mappers/collections'
+import { createdResponse } from '~~/server/utils/response'
 
 const schema = z.object({
   id: z.string().optional(),
@@ -53,8 +55,18 @@ export default defineEventHandler(async (event) => {
       id: collectionId
     }).returning()
 
+    if (!newCollection) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Error al crear la colección en la base de datos'
+      })
+    }
+
     setResponseStatus(event, 201)
-    return newCollection
+    const message = 'Colección creada correctamente'
+    const mappedCollection = mapCollectionEntityToCollection(newCollection)
+
+    return createdResponse<Collection>(message, mappedCollection)
   } catch (error) {
     if (error instanceof z.ZodError) {
       const flattened = z.flattenError(error)

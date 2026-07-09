@@ -2,6 +2,8 @@ import { eq } from 'drizzle-orm'
 import { db } from '../../db'
 import { collections, products } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
+import { mapCollectionEntityToCollection } from '~~/server/mappers/collections'
+import { deletedResponse } from '~~/server/utils/response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -31,18 +33,18 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    if (result.length === 0) {
+    const deletedCollection = result[0]
+    if (!deletedCollection) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Colección no encontrada'
       })
     }
 
-    return {
-      success: true,
-      message: 'Colección eliminada correctamente',
-      deletedCollection: result[0]
-    }
+    const message = 'Colección eliminada correctamente'
+    const mappedCollection = mapCollectionEntityToCollection(deletedCollection)
+
+    return deletedResponse<Collection>(message, mappedCollection)
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error

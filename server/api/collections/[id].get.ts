@@ -1,6 +1,7 @@
 import { collections } from '~~/server/db/schema'
 import { eq, or } from 'drizzle-orm'
 import { db } from '~~/server/db'
+import { mapCollectionEntityToCollection } from '~~/server/mappers/collections'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -31,7 +32,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    return collection
+    return mapCollectionEntityToCollection(collection)
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error
