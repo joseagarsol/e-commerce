@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import type { Promotion } from '~/types/promotion'
 import type { TableColumn } from '@nuxt/ui'
 
 defineProps<{
-  coupons: Promotion[] | undefined
+  coupons: DiscountCode[] | undefined
 }>()
 
 const emit = defineEmits<{
   (e: 'delete', id: string): void
-  (e: 'edit', coupon: Promotion): void
+  (e: 'edit', coupon: DiscountCode): void
 }>()
 
-const columns: TableColumn<Promotion>[] = [
+const columns: TableColumn<DiscountCode>[] = [
   { accessorKey: 'code', header: 'Código de Descuento' },
   { accessorKey: 'discount', header: 'Descuento' },
   { accessorKey: 'apply', header: 'Se aplica a' },

@@ -15,3 +15,9 @@ export interface DeletedResponse<T> {
   message: string
   deletedEntity: T
 }
+
+export interface ValidatedResponse<T> {
+  success: boolean
+  message: string
+  data: T
+}

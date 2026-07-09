@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import type { Promotion } from '~/types/promotion'
 import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
 import { FetchError } from 'ofetch'
 
@@ -19,7 +18,7 @@ const { data: adminData, refresh } = await useAsyncData('admin-dashboard', async
   const [products, collections, coupons, orders] = await Promise.all([
     $fetch<Product[]>('/api/products', { headers }),
     $fetch<Collection[]>('/api/collections', { headers }),
-    $fetch<Promotion[]>('/api/discount-codes', { headers }),
+    $fetch<DiscountCode[]>('/api/discount-codes', { headers }),
     $fetch<OrderResponseDTO[]>('/api/orders', { headers })
   ])
   return { products, collections, coupons, orders }
@@ -39,7 +38,7 @@ const tabs = [
 
 const selectedProduct = ref<Product | null>(null)
 const selectedCollection = ref<Collection | null>(null)
-const selectedCoupon = ref<Promotion | null>(null)
+const selectedCoupon = ref<DiscountCode | null>(null)
 
 const confirmDelete = (type: 'product' | 'collection' | 'coupon', id: string) => {
   itemToDelete.value = { type, id }
@@ -104,7 +103,7 @@ const handleEditCollection = (collection: Collection) => {
   selectedCollection.value = collection
 }
 
-const handleEditCoupon = (coupon: Promotion) => {
+const handleEditCoupon = (coupon: DiscountCode) => {
   isAddCouponOpen.value = true
   selectedCoupon.value = coupon
 }
