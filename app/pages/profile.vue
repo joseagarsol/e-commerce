@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
-
 definePageMeta({
   middleware: 'auth'
 })
@@ -8,7 +6,7 @@ definePageMeta({
 const authStore = useAuthStore()
 const toast = useToast()
 
-const { data: orders } = await useFetch<OrderResponseDTO[]>('/api/orders')
+const { data: orders } = await useFetch('/api/orders')
 
 const totalOrders = computed(() => orders.value?.length || 0)
 const totalSpent = computed(() => {

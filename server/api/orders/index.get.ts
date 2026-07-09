@@ -1,7 +1,7 @@
 import { db } from '../../db'
 import { orders, users, orderItems, products, collections } from '../../db/schema'
 import { eq, desc, inArray } from 'drizzle-orm'
-import { mapOrderToDTO } from '~~/server/dtos/order.dto'
+import { mapOrderEntityToOrder } from '../../mappers/order'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
 
     return dbOrders.map((order) => {
       const itemsForOrder = dbItems.filter(item => item.orderId === order.id)
-      return mapOrderToDTO(order, itemsForOrder)
+      return mapOrderEntityToOrder(order, itemsForOrder)
     })
   } catch (error) {
     if (error instanceof Error) {

@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
 
 defineProps<{
-  orders: OrderResponseDTO[] | undefined
+  orders: Order[] | undefined
 }>()
 
 const emit = defineEmits<{
   (e: 'updateStatus', id: string, newStatus: string): void
 }>()
 
-const columns: TableColumn<OrderResponseDTO>[] = [
+const columns: TableColumn<Order>[] = [
   { accessorKey: 'id', header: 'ID Pedido' },
   { accessorKey: 'customer', header: 'Cliente' },
   { accessorKey: 'total', header: 'Total' },
