@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
-
 definePageMeta({
   middleware: 'auth'
 })
 
-const { data: orders, error, pending } = await useFetch<OrderResponseDTO[]>('/api/orders')
+const { data: orders, error, pending } = await useFetch('/api/orders')
 </script>
 
 <template>

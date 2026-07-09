@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import type { OrderResponseDTO } from '~~/server/dtos/order.dto'
 import { FetchError } from 'ofetch'
 
 const toast = useToast()
@@ -19,7 +18,7 @@ const { data: adminData, refresh } = await useAsyncData('admin-dashboard', async
     $fetch<Product[]>('/api/products', { headers }),
     $fetch<Collection[]>('/api/collections', { headers }),
     $fetch<DiscountCode[]>('/api/discount-codes', { headers }),
-    $fetch<OrderResponseDTO[]>('/api/orders', { headers })
+    $fetch<Order[]>('/api/orders', { headers })
   ])
   return { products, collections, coupons, orders }
 })

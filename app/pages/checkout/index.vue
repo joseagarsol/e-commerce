@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import * as z from 'zod'
 import type { RadioGroupItem, FormSubmitEvent } from '@nuxt/ui'
-import type { CreateOrderInputDTO } from '~~/server/dtos/order.dto'
 
 definePageMeta({
   middleware: 'auth'
@@ -250,7 +249,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   isSubmitting.value = true
 
   try {
-    const payload: CreateOrderInputDTO = {
+    const payload: CreateOrderEntity = {
       billingAddress: {
         email: event.data.email,
         name: event.data.name,

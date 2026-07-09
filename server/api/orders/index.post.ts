@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto'
 import { db } from '../../db'
 import { orders, orderItems, products } from '../../db/schema'
 import { eq } from 'drizzle-orm'
-import type { CreateOrderInputDTO } from '../../dtos/order.dto'
 
 const orderItemSchema = z.object({
   id: z.string(),
@@ -45,7 +44,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event)
-    const validatedData: CreateOrderInputDTO = checkoutSchema.parse(body)
+    const validatedData: CreateOrderEntity = checkoutSchema.parse(body)
     const { billingAddress, shipping, payment, cartItems: items, totalPrice } = validatedData
 
     const orderId = randomUUID()
