@@ -4,11 +4,7 @@ import { users } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { verifyPassword, hashPassword } from '../../utils/auth'
 import { randomUUID } from 'node:crypto'
-
-const schema = z.object({
-  email: z.email('Correo inválido'),
-  password: z.string().min(1, 'Contraseña requerida')
-})
+import { loginSchema as schema } from '~~/shared/validations/login'
 
 export default defineEventHandler(async (event) => {
   try {

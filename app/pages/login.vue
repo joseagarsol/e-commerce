@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import * as z from 'zod'
+import type * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { useAuthStore } from '~/stores/auth'
 import { FetchError } from 'ofetch'
+import { loginSchema } from '~~/shared/validations/login'
 
 definePageMeta({
   middleware: 'guest'
@@ -11,18 +12,13 @@ definePageMeta({
 const authStore = useAuthStore()
 const toast = useToast()
 
-const schema = z.object({
-  email: z.email(),
-  password: z.string('La contraseña es requerida')
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
-})
+const schema = loginSchema
 
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
   email: undefined,
   password: undefined
-
 })
 
 const showPassword = ref(false)
@@ -161,7 +157,7 @@ async function loginAs(email: string, pass: string) {
                   :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                   :aria-pressed="showPassword"
                   aria-controls="password"
-                  @click="showPassword = !showPassword"
+                  @click="() => { showPassword = !showPassword }"
                 />
               </template>
             </UInput>
