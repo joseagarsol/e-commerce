@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-import * as z from 'zod'
-import type { RadioGroupItem, FormSubmitEvent } from '@nuxt/ui'
+import { z } from 'zod'
+import type { FormSubmitEvent, RadioGroupItem } from '@nuxt/ui'
+import type { CreateOrderEntity } from '~~/shared/types/order'
+import { billingAddressSchema } from '~~/shared/validations/order'
 
 definePageMeta({
   middleware: 'auth'
@@ -10,46 +12,30 @@ const cartStore = useCartStore()
 const { getDiscountedPrice, promo } = usePromotions()
 const toast = useToast()
 
-const baseSchema = z.object({
-  email: z.email('El campo email no es correcto'),
-  country: z.string('El campo país es requerido').min(1, 'El campo país es requerido'),
-  name: z.string('El campo nombre es requerido')
-    .min(4, 'El nombre debe tener al menos 4 caracteres')
-    .max(20, 'El nombre debe tener como máximo 20 caracteres'),
-  lastName: z.string('El campo apellido es requerido')
-    .min(4, 'El apellido debe tener al menos 4 caracteres')
-    .max(20, 'El apellido debe tener como máximo 20 caracteres'),
-  company: z.optional(z.string()),
-  address: z.string('El campo dirección es requerido')
-    .min(5, 'La dirección debe tener al menos 5 caracteres')
-    .max(100, 'La dirección debe tener como máximo 100 caracteres'),
-  address2: z.optional(z.string()),
-  postalCode: z.string('El campo código postal es requerido')
-    .min(5, 'El código postal debe tener al menos 5 caracteres')
-    .max(5, 'El código postal debe tener como máximo 5 caracteres'),
-  city: z.string('El campo ciudad es requerido').min(1, 'El campo ciudad es requerido'),
-  province: z.string('El campo provincia es requerido').min(1, 'El campo provincia es requerido'),
-  teléfono: z.string('El campo teléfono es requerido')
-    .min(9, 'El teléfono debe tener al menos 9 caracteres'),
+const baseSchema = billingAddressSchema.extend({
+  country: z.string().min(1, 'El campo país es requerido'),
+  company: z.string().optional(),
+  address2: z.string().optional(),
+  teléfono: z.string().min(9, 'El teléfono debe tener al menos 9 caracteres'),
   shippingPrice: z.number()
 })
 
 const schema = baseSchema.and(z.discriminatedUnion('paymentMethod', [
   z.object({
     paymentMethod: z.literal('credit-card'),
-    cardNumber: z.string('El número de tarjeta es requerido')
+    cardNumber: z.string()
       .min(15, 'El número de tarjeta debe tener al menos 15 dígitos')
       .max(16, 'El número de tarjeta debe tener como máximo 16 dígitos'),
-    cardExpiry: z.string('La fecha es requerida')
+    cardExpiry: z.string()
       .length(4, 'Formato inválido')
       .refine((val) => {
         const month = parseInt(val.slice(0, 2))
         return month >= 1 && month <= 12
       }, 'Mes inválido'),
-    cardCvc: z.string('El CVC es requerido')
+    cardCvc: z.string()
       .min(3, 'CVC inválido')
       .max(4, 'CVC inválido'),
-    cardName: z.string('El titular es requerido')
+    cardName: z.string()
       .min(2, 'Nombre muy corto')
   }),
   z.object({
@@ -78,23 +64,23 @@ const schema = baseSchema.and(z.discriminatedUnion('paymentMethod', [
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-  email: undefined,
-  country: undefined,
-  name: undefined,
-  lastName: undefined,
-  company: undefined,
-  address: undefined,
-  address2: undefined,
-  postalCode: undefined,
-  city: undefined,
-  province: undefined,
-  teléfono: undefined,
+  email: '',
+  country: '',
+  name: '',
+  lastName: '',
+  company: '',
+  address: '',
+  address2: '',
+  postalCode: '',
+  city: '',
+  province: '',
+  teléfono: '',
   shippingPrice: 3.99,
   paymentMethod: 'credit-card',
-  cardNumber: undefined,
-  cardExpiry: undefined,
-  cardCvc: undefined,
-  cardName: undefined
+  cardNumber: '',
+  cardExpiry: '',
+  cardCvc: '',
+  cardName: ''
 })
 
 const shippingMethods = ref<RadioGroupItem[]>([
@@ -280,23 +266,23 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       body: payload
     })
 
-    state.email = undefined
-    state.country = undefined
-    state.name = undefined
-    state.lastName = undefined
-    state.company = undefined
-    state.address = undefined
-    state.address2 = undefined
-    state.postalCode = undefined
-    state.city = undefined
-    state.province = undefined
-    state.teléfono = undefined
+    state.email = ''
+    state.country = ''
+    state.name = ''
+    state.lastName = ''
+    state.company = ''
+    state.address = ''
+    state.address2 = ''
+    state.postalCode = ''
+    state.city = ''
+    state.province = ''
+    state.teléfono = ''
     state.shippingPrice = 3.99
     state.paymentMethod = 'credit-card'
-    state.cardNumber = undefined
-    state.cardExpiry = undefined
-    state.cardCvc = undefined
-    state.cardName = undefined
+    state.cardNumber = ''
+    state.cardExpiry = ''
+    state.cardCvc = ''
+    state.cardName = ''
 
     cartStore.clearCart()
 
