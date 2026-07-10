@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, SelectItem } from '@nuxt/ui'
-import * as z from 'zod'
+import type * as z from 'zod'
+import { createProductSchema } from '~~/shared/validations/product'
 
 interface AddProductModalProps {
   collections: Collection[]
@@ -17,30 +18,7 @@ const isSubmitting = ref(false)
 const hasSizes = ref(!!props.product?.stockBySize)
 const toast = useToast()
 
-const stockBySizeSchema = z.record(
-  z.string(),
-  z.number({ message: 'La cantidad debe ser un número' })
-    .int().nonnegative({ message: 'La cantidad no puede ser negativa' })
-).refine(
-  val => Object.keys(val || {}).length > 0,
-  { message: 'Debes seleccionar al menos una talla y especificar su cantidad' }
-)
-
-const schema = (hasSizesVal: boolean) => z.object({
-  name: z.string()
-    .min(3, 'El nombre del producto debe tener al menos 3 caracteres'),
-  slug: z.string().min(1, 'El slug debe tener al menos 1 caracter'),
-  description: z.string()
-    .min(5, 'La descripción debe tener al menos 5 caracteres'),
-  price: z.number({ message: 'El precio debe ser un número' })
-    .positive('El precio del producto debe ser mayor que 0'),
-  images: z.array(z.string()).min(1, 'Debes subir al menos una imagen de la prenda'),
-  stock: z.number({ message: 'El stock debe ser un número' })
-    .int().nonnegative('El stock no puede ser negativo'),
-  collectionId: z.string()
-    .min(1, 'Debes seleccionar una colección'),
-  stockBySize: hasSizesVal ? stockBySizeSchema : stockBySizeSchema.nullable()
-})
+const schema = (hasSizesVal: boolean) => createProductSchema(hasSizesVal)
 
 type Schema = z.output<ReturnType<typeof schema>>
 
