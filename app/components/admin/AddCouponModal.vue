@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, SelectItem } from '@nuxt/ui'
-import * as z from 'zod'
+import type * as z from 'zod'
 import type { CreatedResponse, UpdatedResponse } from '~~/server/types/response'
+import { discountCodeSchema } from '~~/shared/validations/discountCode'
 
 interface AddCouponModalProps {
   coupon?: DiscountCode | null
@@ -16,28 +17,7 @@ const emit = defineEmits<{
 const isSubmitting = ref(false)
 const toast = useToast()
 
-const schema = z.object({
-  code: z.string()
-    .min(3, { error: 'El código debe tener al menos 3 caracteres' })
-    .regex(/^[A-Z0-9_-]+$/,
-      { error: 'El código solo puede contener letras mayúsculas, números, guiones y guiones bajos' }),
-  discountType: z.enum(['percent', 'price'], {
-    error: 'Debes seleccionar un tipo de descuento'
-  }),
-  apply: z.enum(['shipping', 'cartPrice'], {
-    error: 'Debes seleccionar a qué se aplica'
-  }),
-  discount: z.number({ error: 'El descuento debe ser un número' })
-    .positive({ error: 'El descuento debe ser mayor que 0' })
-}).refine((data) => {
-  if (data.discountType === 'percent') {
-    return data.discount <= 100
-  }
-  return true
-}, {
-  error: 'El descuento porcentual no puede superar el 100%',
-  path: ['discount']
-})
+const schema = discountCodeSchema
 
 type Schema = z.output<typeof schema>
 
