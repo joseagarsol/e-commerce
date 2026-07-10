@@ -5,14 +5,7 @@ import { eq, and, ne } from 'drizzle-orm'
 import { requireAdmin } from '~~/server/utils/auth'
 import { mapCollectionEntityToCollection } from '~~/server/mappers/collections'
 import { updatedResponse } from '~~/server/utils/response'
-
-const schema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  slug: z.string().min(1, 'El slug debe tener al menos 1 caracter'),
-  description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
-  imageUrl: z.string().min(1, 'La imagen de la colección debe tener al menos 1 caracter')
-})
+import { collectionSchema as schema } from '~~/shared/validations/collection'
 
 export default defineEventHandler(async (event) => {
   try {

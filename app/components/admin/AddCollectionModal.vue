@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import * as z from 'zod'
+import type * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { collectionSchema } from '~~/shared/validations/collection'
 
 interface AddCollectionModalProps {
   collection?: Collection | null
@@ -12,12 +13,7 @@ const emit = defineEmits<{
   (e: 'success' | 'cancel'): void
 }>()
 
-const schema = z.object({
-  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  slug: z.string().min(1, 'El slug debe tener al menos 1 caracter'),
-  description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
-  imageUrl: z.string().min(1, 'Debes subir una imagen')
-})
+const schema = collectionSchema
 
 type Schema = z.output<typeof schema>
 
