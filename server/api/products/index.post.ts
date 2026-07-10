@@ -8,6 +8,7 @@ import { createdResponse } from '~~/server/utils/response'
 const productSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  slug: z.string().min(1, 'El slug no puede estar vacío'),
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
   price: z.number().positive('El precio debe ser mayor que 0'),
   images: z.array(z.string().min(1, 'La ruta de la imagen no puede estar vacía')).min(1, 'Debe incluir al menos una imagen'),
@@ -24,22 +25,11 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validatedData = productSchema.parse(body)
 
-    const productId = validatedData.id || validatedData.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
-
-    const productSlug = validatedData.name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+    const productId = validatedData.id || validatedData.slug
 
     const [newProduct] = await db.insert(products).values({
       ...validatedData,
-      id: productId,
-      slug: productSlug
+      id: productId
     }).returning()
 
     if (!newProduct) {

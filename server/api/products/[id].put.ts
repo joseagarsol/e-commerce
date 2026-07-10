@@ -9,6 +9,7 @@ import { updatedResponse } from '~~/server/utils/response'
 const schema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  slug: z.string().min(1, 'El slug no puede estar vacío'),
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
   price: z.number().positive('El precio debe ser mayor que 0'),
   images: z.array(z.string().min(1, 'La ruta de la imagen no puede estar vacía')).min(1, 'Debe incluir al menos una imagen'),
@@ -34,18 +35,11 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validatedData = schema.parse(body)
 
-    const productSlug = validatedData.name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
-
     const [updatedProduct] = await db
       .update(products)
       .set({
         name: validatedData.name,
-        slug: productSlug,
+        slug: validatedData.slug,
         description: validatedData.description,
         price: validatedData.price,
         images: validatedData.images,
