@@ -5,24 +5,7 @@ import { discountCodes } from '../../db/schema'
 import { requireAdmin } from '~~/server/utils/auth'
 import { mapDiscountCodeEntityToDiscountCode, mapDiscountCodeToDiscountCodeEntity } from '~~/server/mappers/discountCodes'
 import { updatedResponse } from '~~/server/utils/response'
-
-const discountCodeSchema = z.object({
-  code: z.string()
-    .min(3, 'El código debe tener al menos 3 caracteres')
-    .regex(/^[A-Z0-9_-]+$/, 'El código solo puede contener letras mayúsculas, números, guiones y guiones bajos'),
-  discountType: z.enum(['percent', 'price']),
-  apply: z.enum(['shipping', 'cartPrice']),
-  discount: z.number({ message: 'El descuento debe ser un número' })
-    .positive('El descuento debe ser mayor que 0')
-}).refine((data) => {
-  if (data.discountType === 'percent') {
-    return data.discount <= 100
-  }
-  return true
-}, {
-  message: 'El descuento porcentual no puede superar el 100%',
-  path: ['discount']
-})
+import { discountCodeSchema } from '~~/shared/validations/discountCode'
 
 export default defineEventHandler(async (event) => {
   try {
