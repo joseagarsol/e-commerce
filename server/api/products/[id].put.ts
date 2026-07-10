@@ -5,19 +5,7 @@ import { eq } from 'drizzle-orm'
 import { requireAdmin } from '~~/server/utils/auth'
 import { mapProductEntityToProduct } from '~~/server/mappers/product'
 import { updatedResponse } from '~~/server/utils/response'
-
-const schema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  slug: z.string().min(1, 'El slug no puede estar vacío'),
-  description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
-  price: z.number().positive('El precio debe ser mayor que 0'),
-  images: z.array(z.string().min(1, 'La ruta de la imagen no puede estar vacía')).min(1, 'Debe incluir al menos una imagen'),
-  stock: z.number().int().nonnegative().default(0),
-  collectionId: z.string().min(1, 'La colección del producto debe ser especificada'),
-  availableSizes: z.array(z.enum(['XS', 'S', 'M', 'L', 'XL'])).nullable().optional(),
-  stockBySize: z.record(z.string(), z.number().int().nonnegative()).nullable().optional()
-})
+import { createProductSchema } from '~~/shared/validations/product'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -33,6 +21,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event)
+    const schema = createProductSchema(!!body?.stockBySize)
     const validatedData = schema.parse(body)
 
     const [updatedProduct] = await db
