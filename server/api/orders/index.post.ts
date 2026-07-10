@@ -3,34 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { db } from '../../db'
 import { orders, orderItems, products } from '../../db/schema'
 import { eq } from 'drizzle-orm'
-
-const orderItemSchema = z.object({
-  id: z.string(),
-  price: z.number(),
-  quantity: z.number().int().positive(),
-  selectedSize: z.string().nullable()
-})
-
-const checkoutSchema = z.object({
-  billingAddress: z.object({
-    email: z.email(),
-    name: z.string().min(2),
-    lastName: z.string().min(2),
-    address: z.string().min(5),
-    postalCode: z.string().length(5),
-    city: z.string().min(1),
-    province: z.string().min(1)
-  }),
-  shipping: z.object({
-    method: z.string(),
-    price: z.number()
-  }),
-  payment: z.object({
-    method: z.string()
-  }),
-  cartItems: z.array(orderItemSchema).min(1),
-  totalPrice: z.number().positive()
-})
+import { checkoutApiSchema as checkoutSchema } from '~~/shared/validations/order'
 
 export default defineEventHandler(async (event) => {
   try {
