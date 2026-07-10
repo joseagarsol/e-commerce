@@ -3,12 +3,7 @@ import { db } from '../../db'
 import { users } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { randomUUID } from 'node:crypto'
-
-const schema = z.object({
-  name: z.string().min(2, 'Debe tener al menos 2 caracteres'),
-  email: z.email('Correo inválido'),
-  password: z.string().min(8, 'Debe tener al menos 8 caracteres')
-})
+import { registerSchema as schema } from '~~/shared/validations/register'
 
 export default defineEventHandler(async (event) => {
   try {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import * as z from 'zod'
+import type * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { FetchError } from 'ofetch'
+import { registerSchema } from '~~/shared/validations/register'
 
 definePageMeta({
   middleware: 'guest'
@@ -10,25 +11,7 @@ definePageMeta({
 const authStore = useAuthStore()
 const toast = useToast()
 
-const schema = z
-  .object({
-    name: z.string('El nombre es requerido')
-      .min(6, 'El nombre debe tener al menos 6 caracteres')
-      .max(20, 'El nombre debe tener menos de 20 caracteres'),
-    email: z.email('Email inválido'),
-    password: z.string('La contraseña es requerida')
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .max(60, 'La contraseña debe tener menos de 60 caracteres')
-      .regex(/[A-Z]/, 'Debe contener al menos una letra mayúscula')
-      .regex(/[a-z]/, 'Debe contener al menos una letra minúscula')
-      .regex(/[0-9]/, 'Debe contener al menos un número')
-      .regex(/[^A-Za-z0-9]/, 'Debe contener al menos un carácter especial'),
-    password_confirmation: z.string('La confirmación de la contraseña es requerida')
-  })
-  .refine(data => data.password === data.password_confirmation, {
-    message: 'Las contraseñas no coinciden',
-    path: ['password_confirmation']
-  })
+const schema = registerSchema
 
 type Schema = z.output<typeof schema>
 
@@ -150,7 +133,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                   :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                   :aria-pressed="showPassword"
                   aria-controls="password"
-                  @click="showPassword = !showPassword"
+                  @click="() => { showPassword = !showPassword }"
                 />
               </template>
             </UInput>
@@ -174,7 +157,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                   :aria-label="showPasswordConfirmation ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                   :aria-pressed="showPasswordConfirmation"
                   aria-controls="password_confirmation"
-                  @click="showPasswordConfirmation = !showPasswordConfirmation"
+                  @click="() => { showPasswordConfirmation = !showPasswordConfirmation }"
                 />
               </template>
             </UInput>
