@@ -37,3 +37,11 @@ export const checkoutApiSchema = z.object({
 })
 
 export type CheckoutApiSchemaOutput = z.output<typeof checkoutApiSchema>
+
+export const orderStatusEnum = z.enum(['pending', 'paid', 'shipped', 'cancelled'])
+
+export const updateOrderStatusSchema = z.object({
+  status: orderStatusEnum
+})
+
+export type UpdateOrderStatusSchemaOutput = z.output<typeof updateOrderStatusSchema>

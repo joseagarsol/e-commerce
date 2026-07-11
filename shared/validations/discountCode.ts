@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const discountCodeSchema = z.object({
+export const discountCodeSchemaBase = z.object({
   code: z.string()
     .min(3, { message: 'El código debe tener al menos 3 caracteres' })
     .regex(/^[A-Z0-9_-]+$/, {
@@ -15,7 +15,9 @@ export const discountCodeSchema = z.object({
   discount: z.number({
     message: 'El descuento debe ser un número'
   }).positive({ message: 'El descuento debe ser mayor que 0' })
-}).refine((data) => {
+})
+
+export const discountCodeSchema = discountCodeSchemaBase.refine((data) => {
   if (data.discountType === 'percent') {
     return data.discount <= 100
   }

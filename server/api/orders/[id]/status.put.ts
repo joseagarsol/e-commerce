@@ -2,10 +2,7 @@ import { z } from 'zod'
 import { db } from '~~/server/db'
 import { users, orders } from '~~/server/db/schema'
 import { eq } from 'drizzle-orm'
-
-const schema = z.object({
-  status: z.enum(['pending', 'paid', 'shipped', 'cancelled'])
-})
+import { updateOrderStatusSchema as schema } from '~~/shared/validations/order'
 
 export default defineEventHandler(async (event) => {
   try {
