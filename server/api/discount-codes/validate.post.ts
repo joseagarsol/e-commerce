@@ -3,9 +3,9 @@ import { db } from '../../db'
 import { discountCodes } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { mapDiscountCodeEntityToDiscountCode } from '~~/server/mappers/discountCodes'
-import { discountCodeSchema } from '~~/shared/validations/discountCode'
+import { discountCodeSchemaBase } from '~~/shared/validations/discountCode'
 
-const couponSchema = discountCodeSchema.pick({ code: true })
+const couponSchema = discountCodeSchemaBase.pick({ code: true })
 
 export default defineEventHandler(async (event) => {
   try {
