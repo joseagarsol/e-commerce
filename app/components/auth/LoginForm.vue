@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import * as z from 'zod'
+import type * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { loginSchema } from '~~/shared/validations/login'
 
 const authStore = useAuthStore()
 
 const emit = defineEmits(['handleUserEmail'])
 
-const schema = z.object({
-  email: z.email('Email inválido')
-})
+const schema = loginSchema.pick({ email: true })
 
 type Schema = z.output<typeof schema>
 

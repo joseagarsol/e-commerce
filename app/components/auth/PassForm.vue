@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import * as z from 'zod'
+import type * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { FetchError } from 'ofetch'
+import { loginSchema } from '~~/shared/validations/login'
 
 interface Props {
   userEmail: string
@@ -13,11 +14,7 @@ const authStore = useAuthStore()
 const props = defineProps<Props>()
 const emit = defineEmits(['handleEmailChange'])
 
-const schema = z.object({
-  email: z.email('Email inválido'),
-  password: z.string()
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
-})
+const schema = loginSchema
 
 type Schema = z.output<typeof schema>
 
@@ -98,7 +95,7 @@ const show = ref(false)
             :aria-label="show ? 'Ocultar contraseña' : 'Mostrar contraseña'"
             :aria-pressed="show"
             aria-controls="password"
-            @click="show = !show"
+            @click="() => { show = !show }"
           />
         </template>
       </UInput>

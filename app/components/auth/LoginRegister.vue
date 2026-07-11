@@ -1,6 +1,32 @@
 <script setup lang="ts">
 const userEmail = ref<string | undefined>(undefined)
 const authStore = useAuthStore()
+const toast = useToast()
+const isSubmitting = ref(false)
+
+async function loginAs(email: string, pass: string) {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
+
+  try {
+    await authStore.login({ email, password: pass })
+
+    toast.add({
+      title: 'Acceso Demo Exitoso',
+      description: `Has iniciado sesión como ${email.includes('admin') ? 'Administrador' : 'Cliente'}`,
+      color: 'success'
+    })
+  } catch (error) {
+    console.error('Error login demo:', error)
+    toast.add({
+      title: 'Error al iniciar sesión',
+      description: 'No se pudo iniciar sesión con la cuenta demo.',
+      color: 'error'
+    })
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>
 
 <template>
@@ -19,6 +45,44 @@ const authStore = useAuthStore()
         :user-email="userEmail"
         @handle-email-change="() => userEmail = undefined"
       />
+
+      <div class="mt-6 space-y-4">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <span class="w-full border-t border-zinc-200 dark:border-zinc-800" />
+          </div>
+          <div class="relative flex justify-center text-xs uppercase">
+            <span class="bg-white dark:bg-zinc-900 px-2 text-zinc-500 font-medium">
+              Acceso Rápido Demo
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <UButton
+            color="neutral"
+            variant="subtle"
+            icon="i-lucide-shield-check"
+            label="Admin"
+            size="md"
+            block
+            class="cursor-pointer"
+            :disabled="isSubmitting"
+            @click="loginAs('admin@urbanluxury.com', 'admin12345')"
+          />
+          <UButton
+            color="neutral"
+            variant="subtle"
+            icon="i-lucide-user"
+            label="Cliente"
+            size="md"
+            block
+            class="cursor-pointer"
+            :disabled="isSubmitting"
+            @click="loginAs('cliente@urbanluxury.com', 'cliente12345')"
+          />
+        </div>
+      </div>
     </div>
     <div
       v-else
