@@ -16,7 +16,9 @@ const baseSchema = billingAddressSchema.extend({
   country: z.string().min(1, 'El campo país es requerido'),
   company: z.string().optional(),
   address2: z.string().optional(),
-  teléfono: z.string().min(9, 'El teléfono debe tener al menos 9 caracteres'),
+  phone: z.string()
+    .min(9, 'El teléfono debe tener al menos 9 caracteres')
+    .regex(/^[0-9]+$/, { error: 'Solo se permiten números' }),
   shippingPrice: z.number()
 })
 
@@ -74,7 +76,7 @@ const state = reactive<Partial<Schema>>({
   postalCode: '',
   city: '',
   province: '',
-  teléfono: '',
+  phone: '',
   shippingPrice: 3.99,
   paymentMethod: 'credit-card',
   cardNumber: '',
@@ -201,7 +203,7 @@ const citiesByCountry = computed(() => {
 })
 
 watch(() => state.country, () => {
-  state.city = undefined
+  state.city = ''
 })
 
 const getDiscountedShipping = (price: number) => {
@@ -277,7 +279,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     state.postalCode = ''
     state.city = ''
     state.province = ''
-    state.teléfono = ''
+    state.phone = ''
     state.shippingPrice = 3.99
     state.paymentMethod = 'credit-card'
     state.cardNumber = ''
@@ -468,7 +470,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                     <UFormField name="teléfono">
                       <UInput
                         id="telefono"
-                        v-model="state.teléfono"
+                        v-model="state.phone"
                         name="telefono"
                         type="tel"
                         placeholder="Teléfono"

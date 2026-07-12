@@ -18,7 +18,9 @@ export const billingAddressSchema = z.object({
   address: z.string()
     .min(5, 'La dirección debe tener al menos 5 caracteres')
     .max(100, 'La dirección debe tener como máximo 100 caracteres'),
-  postalCode: z.string().length(5, 'El código postal debe tener exactamente 5 caracteres'),
+  postalCode: z.string()
+    .length(5, 'El código postal debe tener exactamente 5 caracteres')
+    .regex(/^[0-9]+$/, { error: 'Solo se permiten números' }),
   city: z.string().min(1, 'El campo ciudad es requerido'),
   province: z.string().min(1, 'El campo provincia es requerido')
 })
