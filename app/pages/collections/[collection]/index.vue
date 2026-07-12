@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { SelectMenuItem } from '@nuxt/ui'
+
 definePageMeta({
   layout: 'store'
 })
@@ -9,6 +11,14 @@ const slug = route.params.collection as string
 const { data: collection } = await useFetch<Collection>('/api/collections/' + slug)
 const { data: products } = await useFetch<Product[]>('/api/products?collection=' + slug)
 
+const orderBy = ref<'novedades' | 'precio-asc' | 'precio-desc'>('novedades')
+
+const filters = ref<SelectMenuItem[]>([
+  { label: 'Novedades', id: 'novedades' },
+  { label: 'Precio: Menor a Mayor', id: 'precio-asc' },
+  { label: 'Precio: Mayor a Menor', id: 'precio-desc' }
+])
+
 if (!collection.value) {
   throw createError({
     statusCode: 404,
@@ -18,6 +28,22 @@ if (!collection.value) {
 }
 
 const collectionName = computed(() => collection.value?.name)
+
+const productList = computed(() => {
+  if (!collection.value || !products.value) return []
+
+  const list = [...products.value]
+
+  if (orderBy.value === 'precio-asc') {
+    return list.sort((a, b) => a.price - b.price)
+  }
+
+  if (orderBy.value === 'precio-desc') {
+    return list.sort((a, b) => b.price - a.price)
+  }
+
+  return list
+})
 </script>
 
 <template>
@@ -35,7 +61,10 @@ const collectionName = computed(() => collection.value?.name)
       <div class="flex items-center gap-4">
         <span class="text-[10px] uppercase tracking-[0.2em] text-zinc-400">Filtrar por:</span>
         <USelectMenu
-          :items="['Novedades', 'Precio: Menor a Mayor', 'Precio: Mayor a Menor']"
+          v-model="orderBy"
+          value-key="id"
+          label-key="label"
+          :items="filters"
           placeholder="Relevancia"
           variant="none"
           class="border-b border-zinc-200 dark:border-zinc-800 text-xs uppercase tracking-widest w-full"
@@ -46,7 +75,7 @@ const collectionName = computed(() => collection.value?.name)
 
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
       <ProductCard
-        v-for="product in products"
+        v-for="product in productList"
         :key="product.id"
         :product="product"
       />
