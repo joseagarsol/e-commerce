@@ -145,7 +145,7 @@ const { data: orders, error, pending } = await useFetch('/api/orders')
                 <div>
                   <NuxtLink
                     v-if="item.collectionId"
-                    :to="`/collections/${item.collectionId}/${item.productId}`"
+                    :to="`/collections/${item.collectionSlug}/${item.productSlug}`"
                     class="font-medium text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors truncate block text-sm sm:text-base cursor-pointer"
                   >
                     {{ item.productName || `Producto (${item.productId.substring(0, 8)})` }}
