@@ -58,4 +58,5 @@ export interface CreateOrderEntity {
     selectedSize: string | null
   }>
   totalPrice: number
+  promoCode?: string
 }

@@ -33,7 +33,8 @@ export const checkoutApiSchema = z.object({
     method: z.string()
   }),
   cartItems: z.array(orderItemSchema).min(1),
-  totalPrice: z.number().positive()
+  totalPrice: z.number().positive(),
+  promoCode: z.string().optional()
 })
 
 export type CheckoutApiSchemaOutput = z.output<typeof checkoutApiSchema>

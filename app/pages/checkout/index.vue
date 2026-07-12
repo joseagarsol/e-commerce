@@ -258,7 +258,8 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         quantity: item.quantity,
         selectedSize: item.selectedSize
       })),
-      totalPrice: finalPrice.value
+      totalPrice: finalPrice.value,
+      promoCode: promo.value?.code || undefined
     }
 
     const response = await $fetch('/api/orders', {
