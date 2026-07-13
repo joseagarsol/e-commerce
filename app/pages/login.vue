@@ -9,6 +9,11 @@ definePageMeta({
   middleware: 'guest'
 })
 
+useSeoMeta({
+  title: 'Iniciar Sesión',
+  robots: 'noindex, nofollow'
+})
+
 const authStore = useAuthStore()
 const toast = useToast()
 

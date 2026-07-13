@@ -11,6 +11,31 @@ const slug = route.params.collection as string
 const { data: collection } = await useFetch<Collection>('/api/collections/' + slug)
 const { data: products } = await useFetch<Product[]>('/api/products?collection=' + slug)
 
+useSeoMeta({
+  title: () => collection.value?.name ?? 'Colección',
+  description: () => collection.value?.description || `Explora nuestra selección completa de la colección ${collection.value?.name || ''}.`,
+  ogTitle: () => `${collection.value?.name ?? 'Colección'} - Urban Luxury`,
+  ogDescription: () => collection.value?.description || `Explora nuestra selección completa de la colección ${collection.value?.name || ''}.`,
+  ogImage: () => collection.value?.imageUrl || '/LandingImg_V2.jpg'
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': 'https://urbanluxury.com' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Colecciones', 'item': 'https://urbanluxury.com/collections' },
+          { '@type': 'ListItem', 'position': 3, 'name': collection.value?.name, 'item': `https://urbanluxury.com/collections/${slug}` }
+        ]
+      }))
+    }
+  ]
+})
+
 const orderBy = ref<'novedades' | 'precio-asc' | 'precio-desc'>('novedades')
 
 const filters = ref<SelectMenuItem[]>([

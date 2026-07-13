@@ -8,6 +8,11 @@ definePageMeta({
   middleware: 'guest'
 })
 
+useSeoMeta({
+  title: 'Registro',
+  robots: 'noindex, nofollow'
+})
+
 const authStore = useAuthStore()
 const toast = useToast()
 

@@ -5,7 +5,8 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/image',
     '@pinia/nuxt',
-    'pinia-plugin-persistedstate/nuxt'
+    'pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/seo'
   ],
 
   devtools: {
@@ -13,6 +14,12 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+  site: {
+    url: 'https://urbanluxury.es',
+    name: 'Urban Luxury | Elegancia callejera Redefinida',
+    description: 'Tienda de ropa con piezas atemporales de alta calidad',
+    defaultLocale: 'es'
+  },
 
   runtimeConfig: {
     sessionPassword: ''

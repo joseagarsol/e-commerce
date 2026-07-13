@@ -11,6 +11,11 @@ definePageMeta({
   middleware: 'admin'
 })
 
+useSeoMeta({
+  title: 'Panel de Administración',
+  robots: 'noindex, nofollow'
+})
+
 const { data: adminData, refresh } = await useAsyncData('admin-dashboard', async () => {
   const headers = useRequestHeaders(['cookie'])
   const [products, collections, coupons, orders] = await Promise.all([

@@ -20,6 +20,7 @@
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.6.1",
     "@pinia/nuxt": "0.11.3",
+    "@takumi-rs/core": "2.0.0-rc.16",
     "canvas-confetti": "^1.9.4",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
+    "@nuxtjs/seo": "^5.3.2",
     "@types/canvas-confetti": "^1.9.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.0.2",
