@@ -8,6 +8,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useSeoMeta({
+  title: 'Finalizar Compra',
+  robots: 'noindex, nofollow'
+})
+
 const cartStore = useCartStore()
 const { getDiscountedPrice, promo } = usePromotions()
 const toast = useToast()

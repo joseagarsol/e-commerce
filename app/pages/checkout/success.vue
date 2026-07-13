@@ -5,6 +5,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useSeoMeta({
+  title: 'Compra Completada con Éxito',
+  robots: 'noindex, nofollow'
+})
+
 const route = useRoute()
 const orderId = computed(() => route.query.orderId as string)
 

@@ -3,6 +3,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useSeoMeta({
+  title: 'Mis Pedidos',
+  robots: 'noindex, nofollow'
+})
+
 const { data: orders, error, pending } = await useFetch('/api/orders')
 </script>
 

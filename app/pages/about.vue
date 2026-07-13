@@ -1,3 +1,10 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Sobre Nosotros',
+  description: 'Conoce la historia detrás de Urban Luxury, una marca de Málaga nacida del cruce entre el streetwear y la alta costura.'
+})
+</script>
+
 <template>
   <UContainer>
     <div class="py-12 md:py-24">

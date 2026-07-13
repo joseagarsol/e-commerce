@@ -20,6 +20,53 @@ if (!product.value) {
 
 const activeProduct = product.value
 
+useSeoMeta({
+  title: () => product.value?.name ?? 'Producto',
+  description: () => product.value?.description || 'Detalles del producto Urban Luxury',
+  ogTitle: () => `${product.value?.name ?? 'Producto'} - Urban Luxury`,
+  ogDescription: () => product.value?.description,
+  ogImage: () => product.value?.images?.[0] || '/LandingImg_V2.jpg'
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        'name': product.value?.name,
+        'image': product.value?.images,
+        'description': product.value?.description,
+        'sku': product.value?.id,
+        'offers': {
+          '@type': 'Offer',
+          'url': `https://urbanluxury.com/collections/${route.params.collection}/${product.value?.slug}`,
+          'priceCurrency': 'EUR',
+          'price': product.value?.price,
+          'itemCondition': 'https://schema.org/NewCondition',
+          'availability': product.value?.stock && product.value.stock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock'
+        }
+      }))
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': 'https://urbanluxury.com' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Colecciones', 'item': 'https://urbanluxury.com/collections' },
+          { '@type': 'ListItem', 'position': 3, 'name': product.value?.collectionName || 'Colección', 'item': `https://urbanluxury.com/collections/${route.params.collection}` },
+          { '@type': 'ListItem', 'position': 4, 'name': product.value?.name, 'item': `https://urbanluxury.com/collections/${route.params.collection}/${product.value?.slug}` }
+        ]
+      }))
+    }
+  ]
+})
+
 const cartStore = useCartStore()
 
 const isWishlisted = ref(false)

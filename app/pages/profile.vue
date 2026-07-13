@@ -3,6 +3,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useSeoMeta({
+  title: 'Mi Perfil',
+  robots: 'noindex, nofollow'
+})
+
 const authStore = useAuthStore()
 const toast = useToast()
 

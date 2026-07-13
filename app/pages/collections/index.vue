@@ -1,5 +1,10 @@
 <script setup lang="ts">
 const { data: collections, error } = await useFetch<Collection[]>('/api/collections')
+
+useSeoMeta({
+  title: 'Colecciones',
+  description: 'Explora las colecciones exclusivas de Urban Luxury. Desde básicos de alta calidad hasta las últimas tendencias de la moda callejera premium.'
+})
 </script>
 
 <template>
