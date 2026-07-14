@@ -85,7 +85,7 @@ const { data: orders, error, pending } = await useFetch('/api/orders')
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div class="space-y-1">
               <p class="text-xs text-zinc-400 font-mono tracking-widest uppercase">
-                ID del Pedido: {{ order.id }}
+                Pedido: {{ order.id }}
               </p>
               <p class="text-xs text-zinc-500">
                 <NuxtTime
